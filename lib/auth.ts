@@ -7,6 +7,12 @@ export interface UserInfo extends JwtPayload {
     email: string
     role: string
     username: string
+    payload: {
+        id: string
+        email: string
+        role: string
+        username: string
+    }
 }
 
 export const cookieStore = {

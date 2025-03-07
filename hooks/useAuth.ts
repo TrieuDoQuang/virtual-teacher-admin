@@ -3,6 +3,9 @@ import { useEffect } from 'react'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { login, logout, checkAuth } from '@/services/authService'
 import { LoginRequest } from '@/models/authModel'
+import { tokenUtils } from '@/lib/auth'
+import { Roles } from '@/enums/roles'
+import { toast } from 'sonner'
 export const useAuth = () => {
     const router = useRouter()
     const { user, isLoading, isAuthenticated, clearAuth, setAuth } = useAuthStore()
@@ -28,13 +31,16 @@ export const useAuth = () => {
 
     const handleLogin = async (loginRequest: LoginRequest) => {
         const result = await login(loginRequest)
-        if (result?.statusCode === 200) {
+        
+        if (result?.success) {
             localStorage.setItem('authenticated', 'true')
-            // localStorage.removeItem('hasShownExpiredMessage')
             router.push('/dashboard')
             return true
         }
-        return false
+        else {
+            toast.error(result?.error)
+            return false
+        }
     }
 
     const handleLogout = async (userId: string) => {
@@ -42,7 +48,6 @@ export const useAuth = () => {
             const result = await logout(userId)
             if (result.success) {
                 clearAuth()
-                // localStorage.removeItem('hasShownExpiredMessage')
                 localStorage.removeItem('authenticated')
                 router.push('/login')
                 return true

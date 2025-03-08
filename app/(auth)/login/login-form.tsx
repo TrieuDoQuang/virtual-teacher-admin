@@ -81,10 +81,10 @@ export default function LoginForm() {
                 type="text"
                 placeholder="Enter your username"
                 {...register("username")}
-                error={errors.username?.message}
+                error={errors?.username?.message}
               />
-              {errors.username && (
-                <p className="mt-1 text-sm text-red-500">{errors.username.message}</p>
+              {errors?.username && (
+                <p className="mt-1 text-sm text-red-500">{errors?.username?.message}</p>
               )}
             </div>
 
@@ -97,7 +97,7 @@ export default function LoginForm() {
                 type="password"
                 placeholder="Enter your password"
                 {...register("password")}
-                error={errors.password?.message}
+                error={errors?.password?.message}
               />
               {errors?.password && (
                 <p className="mt-1 text-sm text-red-500">{errors?.password?.message}</p>
@@ -116,14 +116,7 @@ export default function LoginForm() {
           </div>
         </form>
 
-        <div className="mt-6">
-          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-            Don't have an account?{" "}
-            <a href="#" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
-              Contact administrator
-            </a>
-          </p>
-        </div>
+        
       </div>
     </div>
   );

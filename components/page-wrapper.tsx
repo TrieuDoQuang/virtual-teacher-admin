@@ -7,7 +7,7 @@ export default function PageWrapper({ children }: { children: React.ReactNode })
   
     return (
       <div
-        className="flex min-h-screen flex-col items-center justify-between"
+        className="flex min-h-screen flex-col items-center justify-between bg-gradient-to-b from-zinc-950 to-zinc-900"
         key={pathname}
       >
         {children}

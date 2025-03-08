@@ -7,12 +7,9 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 export default function Dashboard({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <main>
-        {children}
-      </main>
-    </SidebarProvider>
+    <div className="container mx-auto py-6 px-4 flex justify-center items-center">
+        <h1>Dashboard</h1>
+    </div>
 
   );
 }

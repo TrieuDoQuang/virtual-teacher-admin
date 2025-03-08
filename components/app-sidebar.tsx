@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox, LogOut, Search, Settings, User, Book } from "lucide-react"
+import { Home, LogOut, Settings, User, Book, UserSquare2Icon } from "lucide-react"
 import { useAuth } from "@/hooks/useAuth"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -27,8 +27,8 @@ const items = [
   },
   {
     title: "Virtual Teacher",
-    url: "/dashboard/virtual-teacher",
-    icon: Calendar,
+    url: "/dashboard/virtual",
+    icon: UserSquare2Icon,
   },
   {
     title: "Account",
@@ -37,12 +37,12 @@ const items = [
   },
   {
     title: "Lesson Plan",
-    url: "/dashboard/lesson-plan",
+    url: "/dashboard/lessons",
     icon: Book,
   },
   {
-    title: "Setting",
-    url: "/dashboard/setting",
+    title: "Settings",
+    url: "/dashboard/settings",
     icon: Settings,
   },
 ]
@@ -89,7 +89,7 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton 
                 onClick={logout}
-                className="w-full flex items-center mb-2 gap-3 px-5 py-3 text-[0.95rem] font-medium text-red-500 hover:text-red-600 hover:bg-red-500/10 transition-colors"
+                className=" flex items-center mb-2 gap-3 px-5 py-3 text-[0.95rem] font-medium text-red-500 hover:text-red-600 hover:bg-red-500/10 transition-colors"
               >
                 <LogOut className="h-5 w-5" />
                 <span>Logout</span>

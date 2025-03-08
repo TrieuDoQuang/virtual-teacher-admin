@@ -8,7 +8,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Input } from "@/components/ui/input"
-
+import { Button } from "@/components/ui/button"
+import { LogInIcon } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
@@ -54,38 +56,75 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-sm">
-        <div className="flex flex-col gap-2">
-          <label htmlFor="username">Username</label>
-          <Input
-            type="text"
-            {...register("username")}
-            className="border p-2 rounded"
-          />
-          {errors?.username && (
-            <span className="text-red-500 text-sm">{errors?.username?.message}</span>
-          )}
-          
-          <label htmlFor="password">Password</label>
-          <Input
-            type="password"
-            {...register("password")}
-            className="border p-2 rounded"
-          />
-          {errors?.password && (
-            <span className="text-red-500 text-sm">{errors?.password?.message}</span>
-          )}
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 dark:bg-zinc-900 p-4">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+      <div className="w-full max-w-md space-y-8 bg-white dark:bg-zinc-800 p-8 rounded-xl shadow-lg">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Welcome back
+          </h2>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            Sign in to your account to continue
+          </p>
         </div>
-        <button 
-          type="submit"
-          disabled={isSubmitting}
-          className="mt-4 w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-        >
-          {isSubmitting ? "Logging in..." : "Login"}
-        </button>
-      </form>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Username
+              </label>
+              <Input
+                id="username"
+                type="text"
+                placeholder="Enter your username"
+                {...register("username")}
+                error={errors.username?.message}
+              />
+              {errors.username && (
+                <p className="mt-1 text-sm text-red-500">{errors.username.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Password
+              </label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                {...register("password")}
+                error={errors.password?.message}
+              />
+              {errors?.password && (
+                <p className="mt-1 text-sm text-red-500">{errors?.password?.message}</p>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Signing in..." : "Sign in"}
+            </Button>
+          </div>
+        </form>
+
+        <div className="mt-6">
+          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+            Don't have an account?{" "}
+            <a href="#" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+              Contact administrator
+            </a>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

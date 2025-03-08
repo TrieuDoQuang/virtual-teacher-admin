@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { login, logout, checkAuth } from '@/services/authService'
 import { LoginRequest } from '@/models/authModel'
-import { tokenUtils } from '@/lib/auth'
+import { cookieStore, tokenUtils } from '@/lib/auth'
 import { Roles } from '@/enums/roles'
 import { toast } from 'sonner'
 export const useAuth = () => {
@@ -43,9 +43,9 @@ export const useAuth = () => {
         }
     }
 
-    const handleLogout = async (userId: string) => {
+    const handleLogout = async () => {
         try {
-            const result = await logout(userId)
+            const result = await logout()
             if (result.success) {
                 clearAuth()
                 localStorage.removeItem('authenticated')

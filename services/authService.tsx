@@ -30,15 +30,15 @@ export async function login(loginRequest: LoginRequest) {
   }
 }
 
-export async function logout(userId: string) {
+export async function logout() {
   try {
-    const token = cookieStore.get("auth_token");
-
+    const token = await cookieStore.get("auth_token");
     if (!token) {
       throw new Error("No auth tokens found");
     }
 
     cookieStore.delete("auth_token");
+    
     return { success: true };
   } catch (error) {
     console.error(error);

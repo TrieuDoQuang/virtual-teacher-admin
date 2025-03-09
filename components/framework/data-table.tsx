@@ -70,7 +70,7 @@ export function DataTable<TData, TValue>({
     <div>
       <div className="flex items-center py-4">
         {/* Column Filter */}
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">Filter</Button>
@@ -101,7 +101,7 @@ export function DataTable<TData, TValue>({
             }
             className="max-w-sm"
           />
-        </div>
+        </div> */}
 
         {/* Show/Hide Columns */}
         <DataTableViewOptions table={table} />

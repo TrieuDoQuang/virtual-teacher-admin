@@ -2,16 +2,6 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Learner } from "@/types/learner";
-import { MoreHorizontal, ArrowUpDown, Activity } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/framework/column-header";
 

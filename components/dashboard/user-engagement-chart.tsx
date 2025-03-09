@@ -26,12 +26,38 @@ export function UserEngagementChart() {
           data={monthlyEngagementData}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         >
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
+          <XAxis 
+            dataKey="date" 
+            stroke="currentColor"
+            tick={{ fill: "currentColor" }}
+          />
+          <YAxis 
+            stroke="currentColor"
+            tick={{ fill: "currentColor" }}
+          />
+          <Tooltip 
+            contentStyle={{ 
+              backgroundColor: "hsl(var(--card))",
+              border: "1px solid hsl(var(--border))",
+              color: "currentColor",
+              borderRadius: "6px",
+            }}
+          />
           <Legend />
-          <Line type="monotone" dataKey="users" stroke="hsl(var(--chart-1))" />
-          <Line type="monotone" dataKey="sessions" stroke="hsl(var(--chart-2))" />
+          <Line 
+            type="monotone" 
+            dataKey="users" 
+            name="Active Users"
+            stroke="hsl(var(--primary))" 
+            strokeWidth={2}
+          />
+          <Line 
+            type="monotone" 
+            dataKey="sessions" 
+            name="Total Sessions"
+            stroke="hsl(var(--secondary))" 
+            strokeWidth={2}
+          />
         </LineChart>
       </CardContent>
     </Card>

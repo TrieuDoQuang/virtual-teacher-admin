@@ -28,20 +28,50 @@ export function LessonCompletionChart() {
         >
           <defs>
             <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0}/>
+              <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
+              <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.2}/>
             </linearGradient>
             <linearGradient id="colorOngoing" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={0.8}/>
-              <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0}/>
+              <stop offset="5%" stopColor="hsl(var(--secondary))" stopOpacity={0.8}/>
+              <stop offset="95%" stopColor="hsl(var(--secondary))" stopOpacity={0.2}/>
             </linearGradient>
           </defs>
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tooltip />
+          <XAxis 
+            dataKey="month" 
+            stroke="currentColor"
+            tick={{ fill: "currentColor" }}
+          />
+          <YAxis 
+            stroke="currentColor"
+            tick={{ fill: "currentColor" }}
+          />
+          <Tooltip 
+            contentStyle={{ 
+              backgroundColor: "hsl(var(--card))",
+              border: "1px solid hsl(var(--border))",
+              color: "currentColor",
+              borderRadius: "6px",
+            }}
+          />
           <Legend />
-          <Area type="monotone" dataKey="completed" stroke="hsl(var(--chart-1))" fillOpacity={1} fill="url(#colorCompleted)" />
-          <Area type="monotone" dataKey="ongoing" stroke="hsl(var(--chart-2))" fillOpacity={1} fill="url(#colorOngoing)" />
+          <Area 
+            type="monotone" 
+            dataKey="completed" 
+            name="Completed Lessons"
+            stroke="hsl(var(--primary))" 
+            strokeWidth={2}
+            fillOpacity={1} 
+            fill="url(#colorCompleted)" 
+          />
+          <Area 
+            type="monotone" 
+            dataKey="ongoing" 
+            name="Ongoing Lessons"
+            stroke="hsl(var(--secondary))" 
+            strokeWidth={2}
+            fillOpacity={1} 
+            fill="url(#colorOngoing)" 
+          />
         </AreaChart>
       </CardContent>
     </Card>

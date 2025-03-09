@@ -15,7 +15,7 @@ export default function DashboardLayout({
         <SidebarProvider>
           <AppSidebar />
         </SidebarProvider>
-        <div className="flex-1 bg-background w-full">
+        <div className="flex-1 bg-background w-full h-full max-h-screen p-4 mt-8">
           {children}
         </div>
       </div>

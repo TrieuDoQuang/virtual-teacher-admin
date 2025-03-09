@@ -11,6 +11,14 @@ const skillProgressData = [
   { name: "Grammar", score: 75 },
 ];
 
+const colors = [
+  "hsl(var(--primary))",
+  "hsl(var(--secondary))",
+  "hsl(var(--accent))",
+  "hsl(var(--destructive))",
+  "hsl(var(--muted))",
+];
+
 export function SkillProgressChart() {
   return (
     <Card>
@@ -25,14 +33,46 @@ export function SkillProgressChart() {
           data={skillProgressData}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         >
-          <Bar dataKey="score" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]}>
+          <Bar dataKey="score" radius={[4, 4, 0, 0]}>
             {skillProgressData.map((entry, index) => (
-              <Cell key={index} fill={`hsl(var(--chart-${index + 1}))`} />
+              <Cell 
+                key={index} 
+                fill={colors[index]} 
+                fillOpacity={0.9}
+              />
             ))}
           </Bar>
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
+          <XAxis 
+            dataKey="name" 
+            stroke="currentColor"
+            tick={{ fill: "currentColor" }}
+          />
+          <YAxis 
+            stroke="currentColor"
+            tick={{ fill: "currentColor" }}
+          />
+          <Tooltip 
+            cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }}
+            contentStyle={{ 
+              backgroundColor: "white",
+              border: "1px solid #e2e8f0",
+              color: "#1a1a1a",
+              borderRadius: "6px",
+              padding: "12px",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+              zIndex: 9999,
+              fontSize: "14px",
+              fontWeight: "500"
+            }}
+            wrapperStyle={{ outline: 'none' }}
+            labelStyle={{ 
+              color: "#1a1a1a",
+              fontWeight: "600",
+              marginBottom: "4px"
+            }}
+            formatter={(value) => [`${value}%`, 'Score']}
+            labelFormatter={(label) => `Skill: ${label}`}
+          />
         </BarChart>
       </CardContent>
     </Card>

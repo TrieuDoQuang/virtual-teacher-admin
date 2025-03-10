@@ -53,7 +53,7 @@ export default function HomeNavbar({ navItems }: { navItems: Navbar[] }) {
         </div>
       </div>
 
-      <div className="w-1/3 h-full flex items-center justify-end mr-[2rem] gap-4">
+      <div className="w-1/3 h-full flex items-center justify-end mr-[2rem] gap-4 hover:cursor-pointer">
         <Link href='/dashboard'>
           <motion.button 
             whileHover={{ scale: 1.05 }}

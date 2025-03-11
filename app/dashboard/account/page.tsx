@@ -20,12 +20,17 @@ export default function AccountPage() {
     setSelectedData(undefined);
     setIsOpen(true);
   };
-  
+
+  const handleDelete = () => {
+    console.log("Delete");
+  };
+
   return (
     <div>
       <h1 className="text-2xl font-bold">Account</h1>
       <DataTable
-        columns={columns({ setAction, setData: setSelectedData, setIsOpen, setIsOpenDelete })}
+        onSubmitDelete={handleDelete}
+        columns={columns({ setAction, setData: setSelectedData, setIsOpen, handleDelete })}
         data={data}
         listHeaderSearch={listHeaderSearch}
         addEditDialog={

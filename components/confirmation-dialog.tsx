@@ -7,10 +7,17 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog"
-export function ConfirmationDialog({isOpen, setIsOpen, title, description, buttonText}: {isOpen: boolean, setIsOpen: (isOpen: boolean) => void, title: string, description: string, buttonText: string}) {
+export function ConfirmationDialog({ title, description, buttonText, onSubmit, dialogTrigger}: {title: string, description: string, buttonText: string, onSubmit: () => void, dialogTrigger: React.ReactNode}) {
+  
+  const handleSubmit = () => {
+    onSubmit();
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog>
+      {dialogTrigger}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
@@ -19,8 +26,7 @@ export function ConfirmationDialog({isOpen, setIsOpen, title, description, butto
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
-          <Button type="submit">{buttonText}</Button>
+          <Button className="cursor-pointer" variant="outline" onClick={handleSubmit}>{buttonText}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

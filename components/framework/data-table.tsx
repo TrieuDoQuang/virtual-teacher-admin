@@ -36,6 +36,7 @@ import { PlusIcon, TrashIcon } from "lucide-react";
 import { ConfirmationDialog } from "../confirmation-dialog";
 import { VirtualTeacherAction } from "@/enums/framework-enum";
 import { AddEditAccountDialog } from "@/app/dashboard/account/add-edit-account";
+import { DialogTrigger } from "@radix-ui/react-dialog";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -43,6 +44,7 @@ interface DataTableProps<TData, TValue> {
   listHeaderSearch: SearchModel[];
   addEditDialog: React.ReactElement;
   onAdd: () => void;
+  onSubmitDelete: () => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -51,13 +53,13 @@ export function DataTable<TData, TValue>({
   listHeaderSearch,
   addEditDialog,
   onAdd,
+  onSubmitDelete,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [search, setSearch] = useState<SearchModel>(listHeaderSearch[0]);
-  const [isOpenDelete, setIsOpenDelete] = useState<boolean>(false);
 
   const table = useReactTable({
     data,
@@ -70,8 +72,6 @@ export function DataTable<TData, TValue>({
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-
-    // getFilteredSelectedRowModel: getFilteredSelectedRowModel(),
     state: {
       columnVisibility,
       rowSelection,
@@ -82,27 +82,34 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      {isOpenDelete && (
-        <ConfirmationDialog onSubmit={() => {}}  isOpen={isOpenDelete} setIsOpen={setIsOpenDelete} title="Delete" description="Are you sure you want to delete these selected items?" buttonText="Delete" />
-      )}
       {addEditDialog}
       <div className="flex items-center py-4">
         {/* Add new button */}
         <div className="flex items-center gap-2 justify-end mr-[5px]">
-          <Button onClick={onAdd}>
-            Add
+          <Button onClick={onAdd} className="cursor-pointer">
             <PlusIcon className="w-4 h-4" />
+            Add
           </Button>
-          <Button
-            size="sm"
-            className="gap-2 text-white cursor-pointer"
-            variant="destructive"
-            onClick={() => setIsOpenDelete(true)}
-            disabled={Object.keys(rowSelection).length === 0}
-          >
-            Delete
-            <TrashIcon className="w-4 h-4" />
-          </Button>
+
+          <ConfirmationDialog
+            dialogTrigger={
+              <DialogTrigger asChild>
+                <Button
+                  size="sm"
+                  className="gap-2 text-white cursor-pointer"
+                  variant="destructive"
+                  disabled={Object.keys(rowSelection).length === 0}
+              >
+                <TrashIcon className="w-4 h-4" />
+                Delete
+              </Button>
+              </DialogTrigger>
+            }
+            onSubmit={onSubmitDelete}
+            title="Delete"
+            description="Are you sure you want to delete these selected items?"
+            buttonText="Delete"
+          />
         </div>
 
         {/* Column Filter */}

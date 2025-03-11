@@ -12,8 +12,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal } from "lucide-react";
-export const columns: ColumnDef<Learner>[] = [
+import { MoreHorizontal, Trash, Pencil } from "lucide-react";
+import { VirtualTeacherAction } from "@/enums/framework-enum";
+import { ConfirmationDialog } from "@/components/confirmation-dialog";
+export interface DataTableActionsProps {
+  setAction: (action: VirtualTeacherAction) => void;
+  setData: (data: Learner) => void;
+  setIsOpen: (isOpen: boolean) => void;
+  setIsOpenDelete: (isOpen: boolean) => void;
+}
+
+export const columns = ({ setAction, setData, setIsOpen, setIsOpenDelete }: DataTableActionsProps): ColumnDef<Learner>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -80,14 +89,41 @@ export const columns: ColumnDef<Learner>[] = [
       <div className="text-left">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-            <DropdownMenuItem>Delete</DropdownMenuItem>
+            <DropdownMenuItem 
+              className="cursor-pointer flex items-center gap-2" 
+              onClick={() => {
+                setAction(VirtualTeacherAction.UPDATE);
+                setData(row.original);
+                setIsOpen(true);
+              }}
+            >
+              Edit
+              <Pencil width={16} height={16} />
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => {
+                  <ConfirmationDialog
+                    isOpen={true}
+                    setIsOpen={setIsOpenDelete}
+                    onSubmit={() => {
+                      console.log("Delete");
+                    }}
+                    title="Delete"
+                    description={`Are you sure you want to delete ${row.original.name}?`}
+                    buttonText="Delete"
+                  />
+              }}
+              className="cursor-pointer flex items-center gap-2" 
+            >
+              Delete
+              <Trash width={16} height={16} />
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

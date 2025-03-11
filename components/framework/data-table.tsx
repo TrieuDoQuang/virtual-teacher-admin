@@ -34,11 +34,15 @@ import { DataTableViewOptions } from "@/components/framework/column-toggle";
 import { SearchModel } from "@/models/searchModel";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import { ConfirmationDialog } from "../confirmation-dialog";
+import { VirtualTeacherAction } from "@/enums/framework-enum";
+import { AddEditAccountDialog } from "@/app/dashboard/account/add-edit-account";
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   listHeaderSearch: SearchModel[];
-  addEditDialog: React.ReactNode;
+  addEditDialog: React.ReactElement;
+  onAdd: () => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -46,6 +50,7 @@ export function DataTable<TData, TValue>({
   data,
   listHeaderSearch,
   addEditDialog,
+  onAdd,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -53,12 +58,6 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [search, setSearch] = useState<SearchModel>(listHeaderSearch[0]);
   const [isOpenDelete, setIsOpenDelete] = useState<boolean>(false);
-
-  console.log(Object.keys(rowSelection).length);
-  
-
-  const AddEditDialog = addEditDialog;
-  
 
   const table = useReactTable({
     data,
@@ -83,13 +82,17 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      {isOpenDelete && <ConfirmationDialog isOpen={isOpenDelete} setIsOpen={setIsOpenDelete}/>}
+      {isOpenDelete && (
+        <ConfirmationDialog onSubmit={() => {}}  isOpen={isOpenDelete} setIsOpen={setIsOpenDelete} title="Delete" description="Are you sure you want to delete these selected items?" buttonText="Delete" />
+      )}
+      {addEditDialog}
       <div className="flex items-center py-4">
         {/* Add new button */}
         <div className="flex items-center gap-2 justify-end mr-[5px]">
-          <div>
-            {AddEditDialog}
-          </div>
+          <Button onClick={onAdd}>
+            Add
+            <PlusIcon className="w-4 h-4" />
+          </Button>
           <Button
             size="sm"
             className="gap-2 text-white cursor-pointer"

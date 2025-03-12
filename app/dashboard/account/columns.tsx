@@ -1,7 +1,6 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Learner } from "@/types/learner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "@/components/framework/column-header";
 import { SearchModel } from "@/models/searchModel";
@@ -16,10 +15,11 @@ import { MoreHorizontal, Trash, Pencil } from "lucide-react";
 import { VirtualTeacherAction } from "@/enums/framework-enum";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Account } from "@/types";
 
 export interface DataTableActionsProps {
   setAction: (action: VirtualTeacherAction) => void;
-  setData: (data: Learner) => void;
+  setData: (data: Account) => void;
   setIsOpen: (isOpen: boolean) => void;
   handleDelete: () => void;
 }
@@ -29,7 +29,7 @@ export const columns = ({
   setData,
   setIsOpen,
   handleDelete,
-}: DataTableActionsProps): ColumnDef<Learner>[] => [
+}: DataTableActionsProps): ColumnDef<Account>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -52,10 +52,10 @@ export const columns = ({
   },
   {
     header: ({ column }) => {
-      return <DataTableColumnHeader title="Name" column={column} />;
+      return <DataTableColumnHeader title="Username" column={column} />;
     },
-    accessorKey: "name",
-    cell: ({ row }) => <div className="text-left">{row.original.name}</div>,
+    accessorKey: "username",
+    cell: ({ row }) => <div className="text-left">{row.original.username}</div>,
   },
   {
     header: ({ column }) => {
@@ -66,25 +66,25 @@ export const columns = ({
   },
   {
     header: ({ column }) => {
-      return <DataTableColumnHeader title="Language" column={column} />;
+      return <DataTableColumnHeader title="Role" column={column} />;
     },
-    accessorKey: "language",
-    cell: ({ row }) => <div className="text-left">{row.original.language}</div>,
+    accessorKey: "role",
+    cell: ({ row }) => <div className="text-left">{row.original.role}</div>,
   },
   {
     header: ({ column }) => {
-      return <DataTableColumnHeader title="Level" column={column} />;
+      return <DataTableColumnHeader title="Created At" column={column} />;
     },
-    accessorKey: "level",
-    cell: ({ row }) => <div className="text-left">{row.original.level}</div>,
+    accessorKey: "createdAt",
+    cell: ({ row }) => <div className="text-left">{row.original.createdAt}</div>,
   },
   {
     header: ({ column }) => {
-      return <DataTableColumnHeader title="Last Activity" column={column} />;
+      return <DataTableColumnHeader title="Updated At" column={column} />;
     },
-    accessorKey: "lastActivity",
+    accessorKey: "updatedAt",
     cell: ({ row }) => (
-      <div className="text-left">{row.original.lastActivity}</div>
+      <div className="text-left">{row.original.updatedAt}</div>
     ),
   },
   {
@@ -162,24 +162,16 @@ export const columns = ({
 
 export const listHeaderSearch: SearchModel[] = [
   {
-    title: "Name",
-    type: "name",
+    title: "Username",
+    type: "username",
   },
   {
     title: "Email",
     type: "email",
   },
   {
-    title: "Language",
-    type: "language",
-  },
-  {
-    title: "Level",
-    type: "level",
-  },
-  {
-    title: "Last Activity",
-    type: "lastActivity",
+    title: "Role",
+    type: "role",
   },
   {
     title: "Created At",

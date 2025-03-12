@@ -15,27 +15,29 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { VirtualTeacherAction } from "@/enums/framework-enum";
-import { Account } from "@/types";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { VirtualTeacher } from "@/types";
 
 const dialogSchema = z.object({
-  username: z.string().min(1, "Username is required"),
-  email: z.string().email("Invalid email address").min(1, "Email is required"),
-  role: z.string().min(1, "Role is required"),
+  name: z.string().min(1, "Name is required"),
+  description: z.string().min(1, "Description is required"),
+  isMale: z.boolean(),
+  code: z.string().min(1, "Code is required"),
+  sample: z.string().min(1, "Sample is required"),
 });
 
 type DialogFormData = z.infer<typeof dialogSchema>;
 
 interface AddEditAccountDialogProps {
   action: VirtualTeacherAction;
-  data?: Account | null;
+  data?: VirtualTeacher | null;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function AddEditAccountDialog({
+export function AddEditTeacherDialog({
   action,
   data,
   isOpen,
@@ -50,17 +52,21 @@ export function AddEditAccountDialog({
   } = useForm<DialogFormData>({
     resolver: zodResolver(dialogSchema),
     defaultValues: {
-      username: "",
-      email: "",
-      role: "",
+      name: "",
+      description: "",
+      isMale: false,
+      code: "",
+      sample: "",
     },
   });
 
   useEffect(() => {
     if (data && action === VirtualTeacherAction.UPDATE) {
-      setValue("username", data?.username);
-      setValue("email", data?.email);
-      setValue("role", data?.role);
+      setValue("name", data?.name);
+      setValue("description", data?.description);
+      setValue("isMale", data?.isMale);
+      setValue("code", data?.code);
+      setValue("sample", data?.sample);
     } else {
       reset();
     }
@@ -90,56 +96,56 @@ export function AddEditAccountDialog({
           <div className="space-y-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right font-medium">
-                Username
+                Name
               </Label>
               <div className="col-span-3">
                 <Input
-                  id="username"
-                  {...register("username")}
-                  className={cn(errors?.username && "border-red-500 focus-visible:ring-red-500")}
-                  placeholder="Enter username"
+                  id="name"
+                  {...register("name")}
+                  className={cn(errors?.name && "border-red-500 focus-visible:ring-red-500")}
+                  placeholder="Enter name"
                 />
-                {errors?.username && (
-                  <p className="text-sm text-red-500 mt-1">{errors?.username?.message}</p>
+                {errors?.name && (
+                  <p className="text-sm text-red-500 mt-1">{errors?.name?.message}</p>
                 )}
               </div>
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="email" className="text-right font-medium">
-                Email
+              <Label htmlFor="description" className="text-right font-medium">
+                Description
               </Label>
               <div className="col-span-3">
                 <Input
-                  id="email"
-                  {...register("email")}
-                  className={cn(errors?.email && "border-red-500 focus-visible:ring-red-500")}
-                  placeholder="Enter email"
+                  id="description"
+                  {...register("description")}
+                  className={cn(errors?.description && "border-red-500 focus-visible:ring-red-500")}
+                  placeholder="Enter description"
                 />
-                {errors?.email && (
-                  <p className="text-sm text-red-500 mt-1">{errors?.email?.message}</p>
+                {errors?.description && (
+                  <p className="text-sm text-red-500 mt-1">{errors?.description?.message}</p>
                 )}
               </div>
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="language" className="text-right font-medium">
-                Role
+              <Label htmlFor="gender" className="text-right font-medium">
+                Gender
               </Label>
               <div className="col-span-3">
                 <Select
-                  {...register("role")}
+                  {...register("isMale")}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select role" />
+                    <SelectValue placeholder="Select isMale" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="ADMIN">Admin</SelectItem>
                     <SelectItem value="LEARNER">Learner</SelectItem>
                   </SelectContent>
                 </Select>
-                {errors?.role && (
-                  <p className="text-sm text-red-500 mt-1">{errors?.role?.message}</p>
+                {errors?.isMale && (
+                  <p className="text-sm text-red-500 mt-1">{errors?.isMale?.message}</p>
                 )}
               </div>
             </div>

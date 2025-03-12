@@ -99,10 +99,10 @@ export function DataTable<TData, TValue>({
                   className="gap-2 text-white cursor-pointer"
                   variant="destructive"
                   disabled={Object.keys(rowSelection).length === 0}
-              >
-                <TrashIcon className="w-4 h-4" />
-                Delete
-              </Button>
+                >
+                  <TrashIcon className="w-4 h-4" />
+                  Delete
+                </Button>
               </DialogTrigger>
             }
             onSubmit={onSubmitDelete}

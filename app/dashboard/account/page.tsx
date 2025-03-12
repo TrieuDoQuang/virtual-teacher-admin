@@ -1,47 +1,95 @@
 "use client";
 
-import { learners } from "@/types/learner";
-import { columns, listHeaderSearch } from "@/app/dashboard/account/columns";
+import { columns, listHeaderSearch } from "./columns";
 import { DataTable } from "@/components/framework/data-table";
 import { AddEditAccountDialog } from "./add-edit-account";
 import { VirtualTeacherAction } from "@/enums/framework-enum";
-import { useState } from "react";
-import { Learner } from "@/types/learner";
+import { useEffect, useState } from "react";
+import { Account } from "@/types";
+import { getAllAccount } from "@/services/accountService";
+import TableSkeleton from "@/components/table-skeleton";
 
 export default function AccountPage() {
-  const data = learners;
-  const [action, setAction] = useState<VirtualTeacherAction>(VirtualTeacherAction.CREATE);
-  const [selectedData, setSelectedData] = useState<Learner | undefined>(undefined);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isOpenDelete, setIsOpenDelete] = useState<boolean>(false);
+  const [action, setAction] = useState<VirtualTeacherAction>(
+    VirtualTeacherAction.CREATE
+  );
+  const [selectedData, setSelectedData] = useState<Account | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchAccounts = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await getAllAccount();
+      setAccounts(data || []);
+    } catch (err: any) {
+      setError(err.message || "Failed to fetch accounts");
+      console.error("Error fetching accounts:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAccounts();
+  }, []);
 
   const handleAdd = () => {
     setAction(VirtualTeacherAction.CREATE);
-    setSelectedData(undefined);
+    setSelectedData(null);
     setIsOpen(true);
   };
 
   const handleDelete = () => {
-    console.log("Delete");
+    console.log("Delete", selectedData);
   };
 
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-10">
+        <TableSkeleton />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto py-10">
+        <div className="text-red-500">{error}</div>
+        <button
+          onClick={fetchAccounts}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold">Account</h1>
+    <div className="container mx-auto py-10">
       <DataTable
-        onSubmitDelete={handleDelete}
-        columns={columns({ setAction, setData: setSelectedData, setIsOpen, handleDelete })}
-        data={data}
+        columns={columns({
+          setAction,
+          setData: setSelectedData,
+          setIsOpen,
+          handleDelete,
+        })}
+        data={accounts}
         listHeaderSearch={listHeaderSearch}
         addEditDialog={
-          <AddEditAccountDialog 
-            action={action} 
-            data={selectedData} 
-            isOpen={isOpen} 
-            onOpenChange={setIsOpen} 
+          <AddEditAccountDialog
+            action={action}
+            data={selectedData}
+            isOpen={isOpen}
+            onOpenChange={setIsOpen}
           />
         }
         onAdd={handleAdd}
+        onSubmitDelete={handleDelete}
       />
     </div>
   );

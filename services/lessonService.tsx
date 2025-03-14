@@ -19,6 +19,15 @@ export async function createLesson(lesson: Lesson) {
     return response?.data;
 }
 
+export async function deleteLesson(lessonId: string) {
+    console.log(lessonId + "lessonId");
+    const response: Response<Lesson> = await apiPrivate.delete("/lesson/deleteLesson", { data: { id: lessonId } });
+    
+    return response?.data;
+}
+
+
+
 
 
 

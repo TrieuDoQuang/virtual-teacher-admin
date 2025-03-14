@@ -46,145 +46,33 @@ export const columns = ({
 }: DataTableActionsProps): ColumnDef<Lesson>[] => [
   {
     id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
+    header: ({ table }) => {
+      return (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-  },
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Title" column={column} />;
-    },
-    accessorKey: "title",
-    cell: ({ row }) => {
-      return <strong className="text-sm max-w-[200px] truncate">{row.original.title}</strong>;
-    },
-  },
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Level" column={column} />;
-    },
-    accessorKey: "level",
-    cell: ({ row }) => {
-      return <strong className="text-sm max-w-[200px] truncate">{row.original.level}</strong>;
-    },
-  },
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Topic" column={column} />;
-    },
-    accessorKey: "topic",
-    cell: ({ row }) => {
-      return <strong className="text-sm max-w-[200px] truncate">{row.original.topic}</strong>;
-    },
-  },
-  {
-    header: ({ column }) => {
-      return (
-        <DataTableColumnHeader title="Learning Objectives" column={column} />
+        />
       );
     },
-    accessorKey: "learningObjectives",
     cell: ({ row }) => {
       return (
-        <p className="text-sm max-w-[200px">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <p className="text-sm max-w-[200px] truncate">
-                  {row.original.learningObjectives}
-                </p>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{row.original.learningObjectives}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </p>
+        <Checkbox
+          checked={row.getIsSelected()}
+          className="cursor-pointer"
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
       );
     },
-  },
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Vocabulary" column={column} />;
-    },
-    accessorKey: "vocabulary",
-    cell: ({ row }) => {
-      return (
-        <div className="flex flex-wrap gap-1.5 py-1">
-          {row.original.vocabulary
-            .split(",")
-            .map(item => item.trim())
-            .filter(item => item.length > 0)
-            .map((item, index) => (
-              <Chip 
-                key={`vocab-${index}-${item}`} 
-                label={item} 
-                variant="secondary"
-                className="text-xs"
-              />
-            ))}
-        </div>
-      );
-    },
-  },
-  {
-    header: ({ column }) => {
-      return (
-        <DataTableColumnHeader title="Conversation Structure" column={column} />
-      );
-    },
-    accessorKey: "conversationStructure",
-    cell: ({ row }) => {
-      return (
-        <ScrollArea className="h-[200px] w-[300px] rounded-md border p-4">
-          <div style={{ whiteSpace: "pre-line" }}>
-            {row.original.conversationStructure}
-          </div>
-        </ScrollArea>
-      );
-    },
-  },
-  {
-    header: ({ column }) => {
-      return (
-        <DataTableColumnHeader title="Duration Estimation" column={column} />
-      );
-    },
-    accessorKey: "durationEstimation",
-    cell: ({ row }) => {
-      return <strong>{row.original.durationEstimation} minutes</strong>;
-    },
-  },
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Created At" column={column} />;
-    },
-    accessorKey: "createdAt",
-  },
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Updated At" column={column} />;
-    },
-    accessorKey: "updatedAt",
   },
   {
     id: "actions",
     header: ({ column }) => {
-      return <DataTableColumnHeader title="Actions" column={column} />;
+      return <DataTableColumnHeader title="" column={column} />;
     },
     cell: ({ row }) => {
       const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -255,6 +143,137 @@ export const columns = ({
         </div>
       );
     },
+  },
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Title" column={column} />;
+    },
+    accessorKey: "title",
+    cell: ({ row }) => {
+      return (
+        <strong className="text-sm max-w-[200px] truncate">
+          {row.original.title}
+        </strong>
+      );
+    },
+  },
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Level" column={column} />;
+    },
+    accessorKey: "level",
+    cell: ({ row }) => {
+      return (
+        <strong className="text-sm max-w-[200px] truncate">
+          {row.original.level}
+        </strong>
+      );
+    },
+  },
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Topic" column={column} />;
+    },
+    accessorKey: "topic",
+    cell: ({ row }) => {
+      return (
+        <strong className="text-sm max-w-[200px] truncate">
+          {row.original.topic}
+        </strong>
+      );
+    },
+  },
+  {
+    header: ({ column }) => {
+      return (
+        <DataTableColumnHeader title="Learning Objectives" column={column} />
+      );
+    },
+    accessorKey: "learningObjectives",
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-col gap-1">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="text-sm max-w-[200px] truncate">
+                  {row.original.learningObjectives}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <span className="text-sm max-w-[200px] truncate">
+                  {row.original.learningObjectives}
+                </span>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      );
+    },
+  },
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Vocabulary" column={column} />;
+    },
+    accessorKey: "vocabulary",
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-wrap gap-1.5 py-1">
+          {row.original.vocabulary
+            .split(",")
+            .map((item) => item.trim())
+            .filter((item) => item.length > 0)
+            .map((item, index) => (
+              <Chip
+                key={`vocab-${index}-${item}`}
+                label={item}
+                variant="secondary"
+                className="text-xs"
+              />
+            ))}
+        </div>
+      );
+    },
+  },
+  {
+    header: ({ column }) => {
+      return (
+        <DataTableColumnHeader title="Conversation Structure" column={column} />
+      );
+    },
+    accessorKey: "conversationStructure",
+    cell: ({ row }) => {
+      return (
+        <ScrollArea className="h-[200px] w-[300px] rounded-md border p-4">
+          <div style={{ whiteSpace: "pre-line" }}>
+            {row.original.conversationStructure}
+          </div>
+        </ScrollArea>
+      );
+    },
+  },
+  {
+    header: ({ column }) => {
+      return (
+        <DataTableColumnHeader title="Duration Estimation" column={column} />
+      );
+    },
+    accessorKey: "durationEstimation",
+    cell: ({ row }) => {
+      return <strong>{row.original.durationEstimation} minutes</strong>;
+    },
+  },
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Created At" column={column} />;
+    },
+    accessorKey: "createdAt",
+  },
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Updated At" column={column} />;
+    },
+    accessorKey: "updatedAt",
   },
 ];
 

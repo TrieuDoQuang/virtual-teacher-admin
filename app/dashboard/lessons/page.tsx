@@ -6,9 +6,10 @@ import { AddEditLessonDialog } from "./add-edit-lesson";
 import { VirtualTeacherAction } from "@/enums/framework-enum";
 import { useEffect, useState } from "react";
 import { Lesson } from "@/types";
-import { getAllLessons } from "@/services/lessonService";
+import { getAllLessons, deleteLesson } from "@/services/lessonService";
 import TableSkeleton from "@/components/table-skeleton";
-
+import { useSelectStore } from "@/stores/useSelectStore";
+import { toast } from "sonner";
 export default function AccountPage() {
   const [action, setAction] = useState<VirtualTeacherAction>(
     VirtualTeacherAction.CREATE
@@ -18,24 +19,31 @@ export default function AccountPage() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const { selectedItems, setSelectedItems } = useSelectStore();
 
   const resetData = () => {
     setSelectedData(null);
     setIsOpen(false);
     setAction(VirtualTeacherAction.CREATE);
     fetchAccounts();
+    setSelectedItems([]);
   };
 
   const fetchAccounts = async () => {
     try {
       setIsLoading(true);
+
       setError(null);
+
       const data = await getAllLessons();
+
       setLessons(data || []);
+
     } catch (err: any) {
       setError(err.message || "Failed to fetch lessons");
+
       console.error("Error fetching lessons:", err);
+
     } finally {
       setIsLoading(false);
     }
@@ -51,8 +59,13 @@ export default function AccountPage() {
     setIsOpen(true);
   };
 
-  const handleDelete = () => {
-    console.log("Delete", selectedData);
+  const handleDelete = async () => {
+    const response = await deleteLesson(selectedItems[0].id);
+    if (response) {
+      resetData();
+      toast.success("Lesson deleted successfully");
+      fetchAccounts();
+    }
   };
 
   if (isLoading) {

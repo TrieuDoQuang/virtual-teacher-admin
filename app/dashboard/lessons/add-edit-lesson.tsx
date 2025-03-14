@@ -141,7 +141,7 @@ export function AddEditLessonDialog({
 
     const response: any = await createLesson(lesson);
     console.log(response, "response");
-    
+
     if (response.statusCode === 200) {
       onOpenChange(false);
       reset();
@@ -149,8 +149,7 @@ export function AddEditLessonDialog({
       toast.success("Lesson created successfully");
       reset();
       resetData?.();
-    }
-    else {
+    } else {
       toast.error("Failed to create lesson");
     }
   };

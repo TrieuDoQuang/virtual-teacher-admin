@@ -27,16 +27,15 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { DataTablePagination } from "@/components/framework/pagination";
 import { DataTableViewOptions } from "@/components/framework/column-toggle";
 import { SearchModel } from "@/models/searchModel";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import { ConfirmationDialog } from "../confirmation-dialog";
-import { VirtualTeacherAction } from "@/enums/framework-enum";
-import { AddEditAccountDialog } from "@/app/dashboard/account/add-edit-account";
 import { DialogTrigger } from "@radix-ui/react-dialog";
+import { useSelectStore } from "@/stores/useSelectStore";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -60,6 +59,7 @@ export function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = useState({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [search, setSearch] = useState<SearchModel>(listHeaderSearch[0]);
+  const { setSelectedItems } = useSelectStore();
 
   const table = useReactTable({
     data,
@@ -79,6 +79,26 @@ export function DataTable<TData, TValue>({
       sorting,
     },
   });
+
+  const handleSelectedRows = () => {
+    const listIds: TData[] = [];
+    const listRows = table.getRowModel().rows.map((row) => row.original);
+    const listRowIds = Object.keys(rowSelection);
+
+    Object.entries(listRows).map(([key, value]) => {
+      if (listRowIds.includes(key)) {
+        listIds.push(value);
+      }
+    });
+
+    return listIds;
+  };
+
+  // Update selected items when row selection changes
+  useEffect(() => {
+    const selectedRows = handleSelectedRows();
+    setSelectedItems(selectedRows);
+  }, [rowSelection, setSelectedItems]);
 
   return (
     <div>

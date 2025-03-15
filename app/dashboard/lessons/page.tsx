@@ -25,11 +25,11 @@ export default function AccountPage() {
     setSelectedData(null);
     setIsOpen(false);
     setAction(VirtualTeacherAction.CREATE);
-    fetchAccounts();
+    fetchLessons();
     setSelectedItems([]);
   };
 
-  const fetchAccounts = async () => {
+  const fetchLessons = async () => {
     try {
       setIsLoading(true);
 
@@ -50,7 +50,7 @@ export default function AccountPage() {
   };
 
   useEffect(() => {
-    fetchAccounts();
+    fetchLessons();
   }, []);
 
   const handleAdd = () => {
@@ -60,13 +60,19 @@ export default function AccountPage() {
   };
 
   const handleDelete = async () => {
-    const response = await deleteLesson(selectedItems[0].id);
+    let ids = selectedItems.map(item => item?.id);
+
+    if (ids.length === 0) {
+      console.log(selectedData, "selectedData");
+      ids = [selectedData?.id];
+    }
+    const response = await deleteLesson(ids);
     if (response) {
       resetData();
       toast.success("Lesson deleted successfully");
-      fetchAccounts();
     }
   };
+
 
   if (isLoading) {
     return (
@@ -81,7 +87,7 @@ export default function AccountPage() {
       <div className="container mx-auto py-10">
         <div className="text-red-500">{error}</div>
         <button
-          onClick={fetchAccounts}
+          onClick={fetchLessons}
           className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Retry

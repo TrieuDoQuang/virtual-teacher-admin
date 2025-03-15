@@ -19,6 +19,7 @@ import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { VirtualTeacher } from "@/types";
+import { Textarea } from "@/components/ui/textarea";
 
 const dialogSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -49,6 +50,7 @@ export function AddEditTeacherDialog({
     formState: { errors },
     reset,
     setValue,
+    watch,
   } = useForm<DialogFormData>({
     resolver: zodResolver(dialogSchema),
     defaultValues: {
@@ -61,16 +63,18 @@ export function AddEditTeacherDialog({
   });
 
   useEffect(() => {
-    if (data && action === VirtualTeacherAction.UPDATE) {
-      setValue("name", data?.name);
-      setValue("description", data?.description);
-      setValue("isMale", data?.isMale);
-      setValue("code", data?.code);
-      setValue("sample", data?.sample);
-    } else {
-      reset();
+    if (isOpen) {
+      if (data && action === VirtualTeacherAction.UPDATE) {
+        setValue("name", data?.name);
+        setValue("description", data?.description);
+        setValue("isMale", data?.isMale);
+        setValue("code", data?.code);
+        setValue("sample", data?.sample);
+      } else {
+        reset();
+      }
     }
-  }, [data, action, setValue, reset]);
+  }, [data, action, setValue, reset, isOpen]);
 
   const onSubmit = (formData: DialogFormData) => {
     console.log("Form submitted:", formData);
@@ -116,7 +120,7 @@ export function AddEditTeacherDialog({
                 Description
               </Label>
               <div className="col-span-3">
-                <Input
+                <Textarea
                   id="description"
                   {...register("description")}
                   className={cn(errors?.description && "border-red-500 focus-visible:ring-red-500")}
@@ -135,13 +139,14 @@ export function AddEditTeacherDialog({
               <div className="col-span-3">
                 <Select
                   {...register("isMale")}
+                  value={watch("isMale") ? "true" : "false"}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select isMale" />
+                    <SelectValue placeholder="Select Gender" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ADMIN">Admin</SelectItem>
-                    <SelectItem value="LEARNER">Learner</SelectItem>
+                    <SelectItem value="true">Male</SelectItem>
+                    <SelectItem value="false">Female</SelectItem>
                   </SelectContent>
                 </Select>
                 {errors?.isMale && (

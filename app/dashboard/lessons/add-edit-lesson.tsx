@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { createLesson, recommendLesson } from "@/services/lessonService";
+import { createLesson, recommendLesson, updateLesson } from "@/services/lessonService";
 import { toast } from "sonner";
 
 // Schema definition remains unchanged
@@ -87,18 +87,28 @@ export function AddEditLessonDialog({
   });
 
   useEffect(() => {
-    if (data && action === VirtualTeacherAction.UPDATE) {
-      setValue("title", data.title);
-      setValue("level", data.level);
-      setValue("topic", data.topic);
-      setValue("learningObjectives", data.learningObjectives);
-      setValue("vocabulary", data.vocabulary);
-      setValue("conversationStructure", data.conversationStructure);
-      setValue("durationEstimation", data.durationEstimation);
-    } else {
-      reset();
+    if (isOpen) {
+      if (data && action === VirtualTeacherAction.UPDATE) {
+        setValue("title", data.title);
+        setValue("level", data.level);
+        setValue("topic", data.topic);
+        setValue("learningObjectives", data.learningObjectives);
+        setValue("vocabulary", data.vocabulary);
+        setValue("conversationStructure", data.conversationStructure);
+        setValue("durationEstimation", data.durationEstimation);
+      } else {
+        reset({
+          title: "",
+          level: "",
+          topic: "",
+          learningObjectives: "",
+          vocabulary: "",
+          conversationStructure: "",
+          durationEstimation: 0,
+        });
+      }
     }
-  }, [data, action, setValue, reset]);
+  }, [isOpen, data, action, setValue, reset]);
 
   const generateWithAI = async () => {
     try {
@@ -128,7 +138,6 @@ export function AddEditLessonDialog({
   };
 
   const onSubmit = async (formData: DialogFormData) => {
-    console.log("Form submitted:", formData);
     const lesson: any = {
       title: formData.title,
       level: formData.level,
@@ -139,20 +148,40 @@ export function AddEditLessonDialog({
       durationEstimation: formData.durationEstimation,
     };
 
-    const response: any = await createLesson(lesson);
-    console.log(response, "response");
+    if (action === VirtualTeacherAction.CREATE) {
+      const response: any = await createLesson(lesson);
 
-    if (response.statusCode === 200) {
-      onOpenChange(false);
-      reset();
-      setShowPromptInput(false);
-      toast.success("Lesson created successfully");
-      reset();
-      resetData?.();
-    } else {
-      toast.error("Failed to create lesson");
+      if (response.statusCode === 200) {
+        onOpenChange(false);
+        reset();
+        setShowPromptInput(false);
+        toast.success("Lesson created successfully");
+        reset();
+        resetData?.();
+      }
+    }
+    else if (action === VirtualTeacherAction.UPDATE) {
+      lesson.id = data?.id;
+
+      console.log(lesson);
+      
+      const response: any = await updateLesson(lesson);
+
+      if (response.statusCode === 200) {
+        onOpenChange(false);
+        toast.success("Lesson updated successfully");
+        setShowPromptInput(false); 
+        reset();
+        resetData?.();
+
+      }
     }
   };
+
+  const onClickCancel = () => {
+    onOpenChange(false);
+    setShowPromptInput(false);
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -276,7 +305,7 @@ export function AddEditLessonDialog({
                         className={cn(
                           "transition-all",
                           errors.title &&
-                            "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
+                          "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
                         )}
                         placeholder="Enter lesson title"
                       />
@@ -328,7 +357,7 @@ export function AddEditLessonDialog({
                       className={cn(
                         "transition-all",
                         errors.topic &&
-                          "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
+                        "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
                       )}
                       placeholder="Enter lesson topic (e.g., 'Daily Routines', 'Business Negotiations')"
                     />
@@ -350,7 +379,7 @@ export function AddEditLessonDialog({
                       className={cn(
                         "max-w-[180px] transition-all",
                         errors.durationEstimation &&
-                          "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
+                        "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
                       )}
                       placeholder="0"
                     />
@@ -391,7 +420,7 @@ export function AddEditLessonDialog({
                       className={cn(
                         "min-h-[80px] max-h-[120px] resize-y transition-all",
                         errors.learningObjectives &&
-                          "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
+                        "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
                       )}
                       placeholder="e.g., 'By the end of this lesson, students will be able to...'"
                     />
@@ -417,7 +446,7 @@ export function AddEditLessonDialog({
                       className={cn(
                         "min-h-[80px] max-h-[120px] resize-y transition-all",
                         errors.vocabulary &&
-                          "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
+                        "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
                       )}
                       placeholder="Enter key vocabulary words and phrases for this lesson"
                     />
@@ -447,7 +476,7 @@ export function AddEditLessonDialog({
                       className={cn(
                         "min-h-[80px] max-h-[120px] resize-y transition-all",
                         errors.conversationStructure &&
-                          "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
+                        "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
                       )}
                       placeholder="Describe how the conversation should flow (introduction, practice, conclusion, etc.)"
                     />
@@ -466,11 +495,7 @@ export function AddEditLessonDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={() => {
-                onOpenChange(false);
-                setShowPromptInput(false);
-                reset();
-              }}
+              onClick={onClickCancel}
               className="px-4"
             >
               Cancel
@@ -484,8 +509,8 @@ export function AddEditLessonDialog({
               {isSubmitting
                 ? "Saving..."
                 : action === VirtualTeacherAction.CREATE
-                ? "Create Lesson"
-                : "Save Changes"}
+                  ? "Create Lesson"
+                  : "Save"}
             </Button>
           </DialogFooter>
         </form>

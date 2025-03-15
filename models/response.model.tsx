@@ -1,8 +1,10 @@
 export interface Response<T> {
+  data: {
     statusCode: number;
     message: string;
     data: T;
   }
+}
 
 export interface PaginationResponseResult<T> {
     statusCode: number;

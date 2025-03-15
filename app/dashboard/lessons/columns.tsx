@@ -12,16 +12,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Badge, MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { VirtualTeacherAction } from "@/enums/framework-enum";
 import {
   Dialog,
+  DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { DialogContent } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Chip } from "@/components/chip";
 import {
@@ -31,6 +32,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
 export interface DataTableActionsProps {
   setAction: (action: VirtualTeacherAction) => void;
   setData: (data: Lesson) => void;
@@ -46,33 +48,29 @@ export const columns = ({
 }: DataTableActionsProps): ColumnDef<Lesson>[] => [
   {
     id: "select",
-    header: ({ table }) => {
-      return (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
-        />
-      );
-    },
-    cell: ({ row }) => {
-      return (
-        <Checkbox
-          checked={row.getIsSelected()}
-          className="cursor-pointer"
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      );
-    },
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        className="cursor-pointer"
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
   },
   {
     id: "actions",
     header: ({ column }) => {
-      return <DataTableColumnHeader title="" column={column} />;
+      return <DataTableColumnHeader title="Actions" column={column} />;
     },
     cell: ({ row }) => {
       const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -114,20 +112,16 @@ export const columns = ({
 
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Delete Account</DialogTitle>
+                <DialogTitle>Delete Lesson</DialogTitle>
                 <DialogDescription>
-                  Are you sure you want to delete this account? This action
-                  cannot be undone.
+                  Are you sure you want to delete this lesson? This action cannot be undone.
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowDeleteDialog(false)}
-                >
+                <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
                   Cancel
                 </Button>
-                <Button
+                <Button 
                   variant="destructive"
                   className="cursor-pointer text-white"
                   onClick={() => {
@@ -151,9 +145,9 @@ export const columns = ({
     accessorKey: "title",
     cell: ({ row }) => {
       return (
-        <strong className="text-sm max-w-[200px] truncate">
+        <div className="font-medium max-w-[200px] truncate">
           {row.original.title}
-        </strong>
+        </div>
       );
     },
   },
@@ -164,9 +158,9 @@ export const columns = ({
     accessorKey: "level",
     cell: ({ row }) => {
       return (
-        <strong className="text-sm max-w-[200px] truncate">
+        <Badge variant="outline">
           {row.original.level}
-        </strong>
+        </Badge>
       );
     },
   },
@@ -177,37 +171,33 @@ export const columns = ({
     accessorKey: "topic",
     cell: ({ row }) => {
       return (
-        <strong className="text-sm max-w-[200px] truncate">
+        <Badge variant="secondary">
           {row.original.topic}
-        </strong>
+        </Badge>
       );
     },
   },
   {
     header: ({ column }) => {
-      return (
-        <DataTableColumnHeader title="Learning Objectives" column={column} />
-      );
+      return <DataTableColumnHeader title="Learning Objectives" column={column} />;
     },
     accessorKey: "learningObjectives",
     cell: ({ row }) => {
       return (
-        <div className="flex flex-col gap-1">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="text-sm max-w-[200px] truncate">
-                  {row.original.learningObjectives}
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <span className="text-sm max-w-[200px] truncate">
-                  {row.original.learningObjectives}
-                </span>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="max-w-[200px] truncate text-sm text-muted-foreground">
+                {row.original.learningObjectives}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <ScrollArea className="h-[200px] w-[350px] rounded-md border p-4">
+                <p className="whitespace-pre-wrap">{row.original.learningObjectives}</p>
+              </ScrollArea>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       );
     },
   },
@@ -237,30 +227,41 @@ export const columns = ({
   },
   {
     header: ({ column }) => {
-      return (
-        <DataTableColumnHeader title="Conversation Structure" column={column} />
-      );
+      return <DataTableColumnHeader title="Conversation Structure" column={column} />;
     },
     accessorKey: "conversationStructure",
     cell: ({ row }) => {
       return (
-        <ScrollArea className="h-[200px] w-[300px] rounded-md border p-4">
-          <div style={{ whiteSpace: "pre-line" }}>
-            {row.original.conversationStructure}
-          </div>
-        </ScrollArea>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <div className="max-w-[200px] truncate text-sm text-muted-foreground">
+                {row.original.conversationStructure}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <ScrollArea className="h-[200px] w-[350px] rounded-md border p-4">
+                <div className="whitespace-pre-line">
+                  {row.original.conversationStructure}
+                </div>
+              </ScrollArea>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       );
     },
   },
   {
     header: ({ column }) => {
-      return (
-        <DataTableColumnHeader title="Duration Estimation" column={column} />
-      );
+      return <DataTableColumnHeader title="Duration" column={column} />;
     },
     accessorKey: "durationEstimation",
     cell: ({ row }) => {
-      return <strong>{row.original.durationEstimation} minutes</strong>;
+      return (
+        <Badge variant="outline" className="font-mono">
+          {row.original.durationEstimation} min
+        </Badge>
+      );
     },
   },
   {
@@ -268,12 +269,26 @@ export const columns = ({
       return <DataTableColumnHeader title="Created At" column={column} />;
     },
     accessorKey: "createdAt",
+    cell: ({ row }) => {
+      return (
+        <div className="text-sm text-muted-foreground">
+          {new Date(row.original.createdAt).toLocaleString()}
+        </div>
+      );
+    },
   },
   {
     header: ({ column }) => {
       return <DataTableColumnHeader title="Updated At" column={column} />;
     },
     accessorKey: "updatedAt",
+    cell: ({ row }) => {
+      return (
+        <div className="text-sm text-muted-foreground">
+          {new Date(row.original.updatedAt).toLocaleString()}
+        </div>
+      );
+    },
   },
 ];
 

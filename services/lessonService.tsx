@@ -19,10 +19,16 @@ export async function createLesson(lesson: Lesson) {
     return response?.data;
 }
 
-export async function deleteLesson(lessonId: string) {
-    console.log(lessonId + "lessonId");
-    const response: Response<Lesson> = await apiPrivate.delete("/lesson/deleteLesson", { data: { id: lessonId } });
+export async function deleteLesson(lessonIds: string[]) {
+    const response: Response<Lesson> = await apiPrivate.delete("/lesson/deleteLessons", { data: { ids: lessonIds } });
     
+    return response?.data;
+}
+
+export async function updateLesson(lesson: Lesson) {
+    console.log(lesson);
+    
+    const response: Response<Lesson> = await apiPrivate.put("/lesson/updateLesson", lesson);
     return response?.data;
 }
 

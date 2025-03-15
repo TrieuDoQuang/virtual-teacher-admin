@@ -16,6 +16,8 @@ import { VirtualTeacherAction } from "@/enums/framework-enum";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Account } from "@/types";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export interface DataTableActionsProps {
   setAction: (action: VirtualTeacherAction) => void;
@@ -48,43 +50,6 @@ export const columns = ({
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
       />
-    ),
-  },
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Username" column={column} />;
-    },
-    accessorKey: "username",
-    cell: ({ row }) => <div className="text-left">{row.original.username}</div>,
-  },
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Email" column={column} />;
-    },
-    accessorKey: "email",
-    cell: ({ row }) => <div className="text-left">{row.original.email}</div>,
-  },
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Role" column={column} />;
-    },
-    accessorKey: "role",
-    cell: ({ row }) => <div className="text-left">{row.original.role}</div>,
-  },
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Created At" column={column} />;
-    },
-    accessorKey: "createdAt",
-    cell: ({ row }) => <div className="text-left">{row.original.createdAt}</div>,
-  },
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Updated At" column={column} />;
-    },
-    accessorKey: "updatedAt",
-    cell: ({ row }) => (
-      <div className="text-left">{row.original.updatedAt}</div>
     ),
   },
   {
@@ -157,6 +122,68 @@ export const columns = ({
         </div>
       );
     },
+  },
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Username" column={column} />;
+    },
+    accessorKey: "username",
+    cell: ({ row }) => (
+      <div className="font-medium">{row.original.username}</div>
+    ),
+  },
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Email" column={column} />;
+    },
+    accessorKey: "email",
+    cell: ({ row }) => (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <div className="max-w-[200px] truncate text-sm text-muted-foreground">
+              {row.original.email}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{row.original.email}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    ),
+  },
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Role" column={column} />;
+    },
+    accessorKey: "role",
+    cell: ({ row }) => (
+      <Badge variant={row.original.role === "admin" ? "default" : "secondary"}>
+        {row.original.role}
+      </Badge>
+    ),
+  },
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Created At" column={column} />;
+    },
+    accessorKey: "createdAt",
+    cell: ({ row }) => (
+      <div className="text-sm text-muted-foreground">
+        {new Date(row.original.createdAt).toLocaleString()}
+      </div>
+    ),
+  },
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Updated At" column={column} />;
+    },
+    accessorKey: "updatedAt",
+    cell: ({ row }) => (
+      <div className="text-sm text-muted-foreground">
+        {new Date(row.original.updatedAt).toLocaleString()}
+      </div>
+    ),
   },
 ];
 

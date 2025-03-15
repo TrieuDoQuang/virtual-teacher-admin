@@ -16,7 +16,10 @@ import { MoreHorizontal } from "lucide-react";
 import { VirtualTeacherAction } from "@/enums/framework-enum";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Pencil, Trash } from "lucide-react"; 
+import { Pencil, Trash } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export interface DataTableActionsProps {
   setAction: (action: VirtualTeacherAction) => void;
@@ -50,40 +53,6 @@ export const columns = ({
         aria-label="Select row"
       />
     ),
-  },
-
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Name" column={column} />;
-    },
-    accessorKey: "name",
-  },
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Description" column={column} />;
-    },
-    accessorKey: "description",
-  },
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Gender" column={column} />;
-    },
-    cell: ({ row }) => {
-      return row.original.isMale ? "Male" : "Female";
-    },
-    accessorKey: "isMale",
-  },
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Code" column={column} />;
-    },
-    accessorKey: "code",
-  },
-  {
-    header: ({ column }) => {
-      return <DataTableColumnHeader title="Sample" column={column} />;
-    },
-    accessorKey: "sample",
   },
   {
     id: "actions",
@@ -156,6 +125,91 @@ export const columns = ({
       );
     },
   },
+
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Name" column={column} />;
+    },
+    accessorKey: "name",
+    cell: ({ row }) => {
+      return (
+        <div className="font-medium">{row.original.name}</div>
+      );
+    },
+  },
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Description" column={column} />;
+    },
+    accessorKey: "description",
+    cell: ({ row }) => {
+      const description = row.original.description;
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <div className="max-w-[300px] truncate">{description}</div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="max-w-xs whitespace-pre-wrap">{description}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
+  },
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Gender" column={column} />;
+    },
+    cell: ({ row }) => {
+      return (
+        <Badge variant={row.original.isMale ? "default" : "secondary"}>
+          {row.original.isMale ? "Male" : "Female"}
+        </Badge>
+      );
+    },
+    accessorKey: "isMale",
+  },
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Code" column={column} />;
+    },
+    accessorKey: "code",
+    cell: ({ row }) => {
+      return (
+        <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+          {row.original.code}
+        </code>
+      );
+    },
+  },
+  {
+    header: ({ column }) => {
+      return <DataTableColumnHeader title="Sample" column={column} />;
+    },
+    accessorKey: "sample",
+    cell: ({ row }) => {
+      const sample = row.original.sample;
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <div className="max-w-[200px] truncate text-sm text-muted-foreground">
+                {sample}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <ScrollArea className="h-[200px] w-[350px] rounded-md border p-4">
+                <p className="whitespace-pre-wrap">{sample}</p>
+              </ScrollArea>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
+  },
+
 ];
 
 export const listHeaderSearch: SearchModel[] = [

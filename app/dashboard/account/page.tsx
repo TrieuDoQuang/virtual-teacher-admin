@@ -108,6 +108,7 @@ export default function AccountPage() {
             data={selectedData}
             isOpen={isOpen}
             onOpenChange={setIsOpen}
+            resetData={resetData}
           />
         }
         onAdd={handleAdd}

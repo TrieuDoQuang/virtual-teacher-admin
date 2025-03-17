@@ -96,6 +96,7 @@ export default function SettingPage() {
           data={selectedData}
           isOpen={isOpen}
           onOpenChange={setIsOpen}
+          resetData={resetData}
         />}
         onAdd={() => {
           setAction(VirtualTeacherAction.CREATE);

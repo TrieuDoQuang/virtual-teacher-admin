@@ -11,15 +11,17 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { VirtualTeacherAction } from "@/enums/framework-enum";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
 import { Setting } from "@/types/setting";
-
+import { updateSetting } from "@/services/settingService";
+import { SettingModel } from "@/models/settingModel";
 const dialogSchema = z.object({
   id: z.string().min(1, "Id is required"),
   value: z.string().min(1, "Value is required"),
@@ -32,6 +34,7 @@ interface AddEditSettingDialogProps {
   data?: Setting | null;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  resetData: () => void;
 }
 
 export function AddEditSettingDialog({
@@ -39,11 +42,12 @@ export function AddEditSettingDialog({
   data,
   isOpen,
   onOpenChange,
+  resetData,
 }: AddEditSettingDialogProps) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { isSubmitting, errors },
     reset,
     setValue,
   } = useForm<DialogFormData>({
@@ -63,16 +67,29 @@ export function AddEditSettingDialog({
     }
   }, [data, action, setValue, reset]);
 
-  const onSubmit = (formData: DialogFormData) => {
-    console.log("Form submitted:", formData);
-    onOpenChange(false);
-    reset();
+  const onSubmit = async (formData: DialogFormData) => {
+    const setting: SettingModel = {
+      id: formData.id,
+      value: formData.value,
+    };
+    const response = await updateSetting(setting);
+    if (response) {
+      if (response.statusCode === 200) {
+        onOpenChange(false);
+        toast.success("Setting updated successfully");
+        reset();
+        resetData?.();  
+      }
+      else {
+        toast.error("Failed to update setting");
+      }
+    }
   };
 
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[800px]">
         <DialogHeader className="space-y-3">
           <DialogTitle className="text-2xl">
             {action === VirtualTeacherAction.CREATE ? "Add Setting" : "Edit Setting"}
@@ -92,6 +109,12 @@ export function AddEditSettingDialog({
               <div className="col-span-3">
                 <Input
                   id="id"
+                  autoComplete="off"
+                  autoFocus={false}
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  style={{ userSelect: 'text' }}
                   {...register("id")}
                   className={cn(errors?.id && "border-red-500 focus-visible:ring-red-500")}
                   placeholder="Enter setting ID"
@@ -108,10 +131,10 @@ export function AddEditSettingDialog({
                 Value
               </Label>
               <div className="col-span-3">
-                <Input
+                <Textarea
                   id="value"
                   {...register("value")}
-                  className={cn(errors?.value && "border-red-500 focus-visible:ring-red-500")}
+                  className={cn(errors?.value && "border-red-500 focus-visible:ring-red-500 h-[200px] resize-none transition-all")}
                   placeholder="Enter setting value"
                 />
                 {errors?.value && (
@@ -129,8 +152,8 @@ export function AddEditSettingDialog({
             >
               Cancel
             </Button>
-            <Button type="submit">
-              Save
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : "Save"}
             </Button>
           </DialogFooter>
         </form>

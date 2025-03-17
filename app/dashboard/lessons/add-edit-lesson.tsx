@@ -153,7 +153,6 @@ export function AddEditLessonDialog({
 
       if (response.statusCode === 200) {
         onOpenChange(false);
-        reset();
         setShowPromptInput(false);
         toast.success("Lesson created successfully");
         reset();
@@ -418,7 +417,7 @@ export function AddEditLessonDialog({
                       id="learningObjectives"
                       {...register("learningObjectives")}
                       className={cn(
-                        "min-h-[80px] max-h-[120px] resize-y transition-all",
+                        "h-[120px] resize-none transition-all",
                         errors.learningObjectives &&
                         "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
                       )}
@@ -444,7 +443,7 @@ export function AddEditLessonDialog({
                       id="vocabulary"
                       {...register("vocabulary")}
                       className={cn(
-                        "min-h-[80px] max-h-[120px] resize-y transition-all",
+                        "h-[120px] resize-none transition-all",
                         errors.vocabulary &&
                         "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
                       )}
@@ -474,11 +473,12 @@ export function AddEditLessonDialog({
                       id="conversationStructure"
                       {...register("conversationStructure")}
                       className={cn(
-                        "min-h-[80px] max-h-[120px] resize-y transition-all",
+                        "h-[120px] resize-none transition-all",
                         errors.conversationStructure &&
                         "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
                       )}
                       placeholder="Describe how the conversation should flow (introduction, practice, conclusion, etc.)"
+                      style={{  }}
                     />
                     {errors.conversationStructure && (
                       <p className="text-sm text-red-500">

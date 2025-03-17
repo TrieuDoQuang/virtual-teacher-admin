@@ -8,7 +8,9 @@ import { useEffect, useState } from "react";
 import { Account } from "@/types";
 import { getAllAccount } from "@/services/accountService";
 import TableSkeleton from "@/components/table-skeleton";
-
+import { useSelectStore } from "@/stores/useSelectStore";
+import { deleteAccount } from "@/services/accountService";
+import { toast } from "sonner";
 export default function AccountPage() {
   const [action, setAction] = useState<VirtualTeacherAction>(
     VirtualTeacherAction.CREATE
@@ -18,6 +20,7 @@ export default function AccountPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { selectedItems, setSelectedItems } = useSelectStore();
 
   const fetchAccounts = async () => {
     try {
@@ -43,8 +46,27 @@ export default function AccountPage() {
     setIsOpen(true);
   };
 
-  const handleDelete = () => {
-    console.log("Delete", selectedData);
+  const resetData = () => {
+    setSelectedData(null);
+    setIsOpen(false);
+    setAction(VirtualTeacherAction.CREATE);
+    fetchAccounts();
+    setSelectedItems([]);
+  };
+
+  const handleDelete = async () => {
+    let ids = selectedItems.map((item) => item?.id);
+
+    if (ids.length === 0) {
+      ids = [selectedData?.id];
+    }
+    const response = await deleteAccount(ids);
+    if (response) {
+      toast.success("Account deleted successfully");
+      resetData();
+    } else {
+      toast.error("Failed to delete account");
+    }
   };
 
   if (isLoading) {

@@ -4,10 +4,12 @@ import { DataTable } from "@/components/framework/data-table";
 import { columns, listHeaderSearch } from "./columns";
 import { VirtualTeacherAction } from "@/enums/framework-enum";
 import { useEffect, useState } from "react";
-import { getAllTeacher } from "@/services/teacherService";
+import { deleteTeachers, getAllTeacher } from "@/services/teacherService";
 import TableSkeleton from "@/components/table-skeleton";
 import { VirtualTeacher } from "@/types";
 import { AddEditTeacherDialog } from "./add-edit-teacher";
+import { useSelectStore } from "@/stores/useSelectStore";
+import { toast } from "sonner";
 
 export default function VirtualTeacherPage() {
   const [teachers, setTeachers] = useState<VirtualTeacher[]>([]);
@@ -18,6 +20,7 @@ export default function VirtualTeacherPage() {
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { selectedItems, setSelectedItems } = useSelectStore();
 
   
 
@@ -36,12 +39,31 @@ export default function VirtualTeacherPage() {
     }
   };
 
+  const resetData = () => {
+    setSelectedData(null);
+    setIsOpen(false);
+    setAction(VirtualTeacherAction.CREATE);
+    getTeachers();
+  };
+
+
+
+
   useEffect(() => {
     getTeachers();
   }, []);
 
-  const handleDelete = () => {
-    console.log("Delete");
+  const handleDelete = async () => {
+    let ids = selectedItems.map(item => item?.id);
+
+    if (ids.length === 0) {
+      ids = [selectedData?.id];
+    }
+    const response = await deleteTeachers(ids);
+    if (response) {
+      resetData();
+      toast.success("Teacher deleted successfully");
+    }
   };
 
   const handleAdd = () => {
@@ -72,7 +94,6 @@ export default function VirtualTeacherPage() {
     <div>
       <h1 className="font-bold text-2xl">Virtual Teacher</h1>
       <DataTable
-        onSubmitDelete={handleDelete}
         columns={columns({
           setAction,
           setData: setSelectedData,
@@ -87,9 +108,11 @@ export default function VirtualTeacherPage() {
             data={selectedData}
             isOpen={isOpen}
             onOpenChange={setIsOpen}
+            resetData={resetData}
           />
         }
         onAdd={handleAdd}
+        onSubmitDelete={handleDelete}
       />
     </div>
   );

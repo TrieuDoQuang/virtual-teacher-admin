@@ -19,10 +19,12 @@ export const getAllAccount = async (): Promise<Account[]> => {
   }
 };
 
-export const deleteAccount = async (accountId: string) => {
+export const deleteAccount = async (listAccountId: string[]) => {
   try {
-    const response: any = await apiPrivate.post("/account/deleteAccount", {
-      accountId,
+    const response: any = await apiPrivate.delete("/account/deleteAccounts", {
+      data: {
+        ids: listAccountId,
+      },
     });
     return response?.data;
   } catch (error) {
@@ -32,3 +34,17 @@ export const deleteAccount = async (accountId: string) => {
     );
   }
 };
+
+export const updateAccount = async (account: Account) => {
+  try {
+    const response: any = await apiPrivate.post("/account/updateProfile", {
+      account,
+    });
+    return response?.data;
+  } catch (error) {
+    console.error("Error updating account:", error);
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to update account"
+    );
+  }
+}

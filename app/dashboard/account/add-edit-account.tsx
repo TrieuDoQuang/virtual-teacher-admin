@@ -18,7 +18,13 @@ import { VirtualTeacherAction } from "@/enums/framework-enum";
 import { Account } from "@/types";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectItem,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const dialogSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -33,6 +39,7 @@ interface AddEditAccountDialogProps {
   data?: Account | null;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  resetData: () => void;
 }
 
 export function AddEditAccountDialog({
@@ -40,13 +47,13 @@ export function AddEditAccountDialog({
   data,
   isOpen,
   onOpenChange,
+  resetData,
 }: AddEditAccountDialogProps) {
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
   } = useForm<DialogFormData>({
     resolver: zodResolver(dialogSchema),
     defaultValues: {
@@ -58,27 +65,35 @@ export function AddEditAccountDialog({
 
   useEffect(() => {
     if (data && action === VirtualTeacherAction.UPDATE) {
-      setValue("username", data?.username);
-      setValue("email", data?.email);
-      setValue("role", data?.role);
-    } else {
-      reset();
-    }
-  }, [data, action, setValue, reset]);
+      reset({
+        username: data.username,
+        email: data.email,
+        role: data.role,
+        });
+      } else {
+        reset();
+      }
+
+  }, [data, action, reset]);
 
   const onSubmit = (formData: DialogFormData) => {
     console.log("Form submitted:", formData);
     onOpenChange(false);
     reset();
+    resetData();
   };
-
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent 
+        className="sm:max-w-[600px]"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader className="space-y-3">
           <DialogTitle className="text-2xl">
-            {action === VirtualTeacherAction.CREATE ? "Add Account" : "Edit Account"}
+            {action === VirtualTeacherAction.CREATE
+              ? "Add Account"
+              : "Edit Account"}
           </DialogTitle>
           <DialogDescription className="text-base">
             {action === VirtualTeacherAction.CREATE
@@ -96,11 +111,22 @@ export function AddEditAccountDialog({
                 <Input
                   id="username"
                   {...register("username")}
-                  className={cn(errors?.username && "border-red-500 focus-visible:ring-red-500")}
+                  autoComplete="off"
+                  autoFocus={false}
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  style={{ userSelect: 'text' }}
+                  className={cn(
+                    errors?.username &&
+                      "border-red-500 focus-visible:ring-red-500"
+                  )}
                   placeholder="Enter username"
                 />
                 {errors?.username && (
-                  <p className="text-sm text-red-500 mt-1">{errors?.username?.message}</p>
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors?.username?.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -113,11 +139,21 @@ export function AddEditAccountDialog({
                 <Input
                   id="email"
                   {...register("email")}
-                  className={cn(errors?.email && "border-red-500 focus-visible:ring-red-500")}
+                  autoComplete="off"
+                  autoFocus={false}
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  style={{ userSelect: 'text' }}
+                  className={cn(
+                    errors?.email && "border-red-500 focus-visible:ring-red-500"
+                  )}
                   placeholder="Enter email"
                 />
                 {errors?.email && (
-                  <p className="text-sm text-red-500 mt-1">{errors?.email?.message}</p>
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors?.email?.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -127,9 +163,7 @@ export function AddEditAccountDialog({
                 Role
               </Label>
               <div className="col-span-3">
-                <Select
-                  {...register("role")}
-                >
+                <Select {...register("role")}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
@@ -139,7 +173,9 @@ export function AddEditAccountDialog({
                   </SelectContent>
                 </Select>
                 {errors?.role && (
-                  <p className="text-sm text-red-500 mt-1">{errors?.role?.message}</p>
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors?.role?.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -153,9 +189,7 @@ export function AddEditAccountDialog({
             >
               Cancel
             </Button>
-            <Button type="submit">
-              Save
-            </Button>
+            <Button type="submit">Save</Button>
           </DialogFooter>
         </form>
       </DialogContent>

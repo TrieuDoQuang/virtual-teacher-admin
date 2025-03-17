@@ -8,3 +8,11 @@ export interface Teacher extends AuditableModel  {
     code: string;
     sample: string;
 }
+
+export interface CreateTeacherRequest {
+    name: string;
+    description: string;
+    isMale: boolean;
+    code: string;
+    sample: string;
+}

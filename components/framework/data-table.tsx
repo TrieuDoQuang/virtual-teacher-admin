@@ -98,7 +98,7 @@ export function DataTable<TData, TValue>({
   useEffect(() => {
     const selectedRows = handleSelectedRows();
     setSelectedItems(selectedRows);
-  }, [rowSelection, setSelectedItems, handleSelectedRows]);
+  }, [rowSelection, setSelectedItems]);
 
   return (
     <div>

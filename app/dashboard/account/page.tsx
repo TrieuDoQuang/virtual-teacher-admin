@@ -28,9 +28,8 @@ export default function AccountPage() {
       setError(null);
       const data = await getAllAccount();
       setAccounts(data || []);
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to fetch accounts";
-      setError(errorMessage);
+    } catch (err: any) {
+      setError(err.message || "Failed to fetch accounts");
       console.error("Error fetching accounts:", err);
     } finally {
       setIsLoading(false);

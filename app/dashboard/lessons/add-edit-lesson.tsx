@@ -116,26 +116,16 @@ export function AddEditLessonDialog({
 
       const response = await recommendLesson(promptInput);
 
-      const result = response as {
-        data: {
-          title: string;
-          level: string;
-          topic: string;
-          learningObjectives: string;
-          vocabulary: string;
-          conversationStructure: string;
-          durationEstimation: number;
-        }
-      };
+      const result: any = response;
 
       if (result) {
-        setValue("title", result.data.title);
-        setValue("level", result.data.level);
-        setValue("topic", result.data.topic);
-        setValue("learningObjectives", result.data.learningObjectives);
-        setValue("vocabulary", result.data.vocabulary);
-        setValue("conversationStructure", result.data.conversationStructure);
-        setValue("durationEstimation", result.data.durationEstimation);
+        setValue("title", result?.data?.title);
+        setValue("level", result?.data?.level);
+        setValue("topic", result?.data?.topic);
+        setValue("learningObjectives", result?.data?.learningObjectives);
+        setValue("vocabulary", result?.data?.vocabulary);
+        setValue("conversationStructure", result?.data?.conversationStructure);
+        setValue("durationEstimation", result?.data?.durationEstimation);
 
         // Hide prompt input after successful generation
         setShowPromptInput(false);
@@ -148,7 +138,7 @@ export function AddEditLessonDialog({
   };
 
   const onSubmit = async (formData: DialogFormData) => {
-    const lesson: Lesson = {
+    const lesson: any = {
       title: formData.title,
       level: formData.level,
       topic: formData.topic,
@@ -156,14 +146,10 @@ export function AddEditLessonDialog({
       vocabulary: formData.vocabulary,
       conversationStructure: formData.conversationStructure,
       durationEstimation: formData.durationEstimation,
-      id: data?.id ?? "",
-      accountId: data?.accountId ?? "",
-      createdAt: data?.createdAt ?? new Date().toISOString(),
-      updatedAt: new Date().toISOString()
     };
 
     if (action === VirtualTeacherAction.CREATE) {
-      const response = await createLesson(lesson);
+      const response: any = await createLesson(lesson);
 
       if (response.statusCode === 200) {
         onOpenChange(false);
@@ -174,7 +160,11 @@ export function AddEditLessonDialog({
       }
     }
     else if (action === VirtualTeacherAction.UPDATE) {
-      const response = await updateLesson(lesson);
+      lesson.id = data?.id;
+
+      console.log(lesson);
+      
+      const response: any = await updateLesson(lesson);
 
       if (response.statusCode === 200) {
         onOpenChange(false);
@@ -182,6 +172,7 @@ export function AddEditLessonDialog({
         setShowPromptInput(false); 
         reset();
         resetData?.();
+
       }
     }
   };

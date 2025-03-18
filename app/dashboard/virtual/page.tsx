@@ -20,7 +20,7 @@ export default function VirtualTeacherPage() {
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { selectedItems } = useSelectStore();
+  const { selectedItems, setSelectedItems } = useSelectStore();
 
   
 
@@ -44,6 +44,7 @@ export default function VirtualTeacherPage() {
     setIsOpen(false);
     setAction(VirtualTeacherAction.CREATE);
     getTeachers();
+    setSelectedItems([]);
   };
 
 

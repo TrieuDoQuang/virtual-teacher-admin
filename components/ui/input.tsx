@@ -12,10 +12,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const radius = 100;
     const [visible, setVisible] = React.useState(false);
 
-    let mouseX = useMotionValue(0);
-    let mouseY = useMotionValue(0);
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
 
-    function handleMouseMove({ currentTarget, clientX, clientY }: any) {
+    function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent<HTMLInputElement>) {
       let { left, top } = currentTarget.getBoundingClientRect();
 
       mouseX.set(clientX - left);

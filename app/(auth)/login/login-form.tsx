@@ -9,7 +9,6 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { LogInIcon } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -45,6 +44,7 @@ export default function LoginForm() {
         });
       }
     } catch (error) {
+      console.log(error);
       toast.error("Login failed", {
         description: "Please check your credentials and try again.",
         duration: 3000,

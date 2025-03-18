@@ -1,7 +1,4 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import Thee3d from "@/components/thee3d";
-import { ArrowRight } from "lucide-react";
 export default function HomePage() {
   return (
     <section className="w-full h-screen overflow-hidden flex items-center bg-no-repeat bg-full-screen bg-center-center relative">

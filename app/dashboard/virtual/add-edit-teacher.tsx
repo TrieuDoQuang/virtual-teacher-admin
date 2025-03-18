@@ -15,7 +15,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { VirtualTeacherAction } from "@/enums/framework-enum";
-import { useEffect } from "react";
+import { VirtualTeacher } from "@/types/virtual-teacher";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -24,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { VirtualTeacher } from "@/types";
 import { Textarea } from "@/components/ui/textarea";
 import { CreateTeacherRequest, Teacher } from "@/models/teacherModel";
 import { createTeacher, updateTeacher } from "@/services/teacherService";
@@ -73,31 +73,35 @@ export function AddEditTeacherDialog({
   });
 
   useEffect(() => {
-      if (isOpen) {
-        if (data && action === VirtualTeacherAction.UPDATE) {
-          reset({
-            name: data?.name,
-            description: data?.description,
-            isMale: data?.isMale,
-            code: data?.code,
-            sample: data?.sample,
-          });
-        } else {
-          reset();
-        }
+    if (isOpen) {
+      if (data && action === VirtualTeacherAction.UPDATE) {
+        setValue("name", data.name);
+        setValue("description", data.description);
+        setValue("isMale", data.isMale);
+        setValue("code", data.code);
+        setValue("sample", data.sample);
+      } else {
+        reset({
+          name: "",
+          description: "",
+          isMale: true,
+          code: "",
+          sample: "",
+        });
       }
-  }, [data, action, isOpen]);
+    }
+  }, [isOpen, data, action, setValue, reset]);
 
   const onSubmit = async (formData: DialogFormData) => {
+    const teacher: CreateTeacherRequest = {
+      name: formData.name,
+      description: formData.description,
+      isMale: formData.isMale,
+      code: formData.code,
+      sample: formData.sample,
+    };
     var res = null;
     if (action === VirtualTeacherAction.CREATE) {
-      const teacher: CreateTeacherRequest = {
-        name: formData.name,
-        description: formData.description,
-        isMale: formData.isMale,
-        code: formData.code,
-        sample: formData.sample,
-      };
       res = await createTeacher(teacher);
     } else if (action === VirtualTeacherAction.UPDATE) {
       const teacher: any = {

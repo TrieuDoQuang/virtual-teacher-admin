@@ -218,21 +218,51 @@ export const columns = ({
     },
     accessorKey: "vocabulary",
     cell: ({ row }) => {
+      const vocabularyItems = row.original.vocabulary
+        .split(",")
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0);
+
+      const displayCount = 3;
+      const displayedItems = vocabularyItems.slice(0, displayCount);
+      const remainingCount = vocabularyItems.length - displayCount;
+
       return (
-        <div className="flex flex-wrap gap-1.5 py-1">
-          {row.original.vocabulary
-            .split(",")
-            .map((item) => item.trim())
-            .filter((item) => item.length > 0)
-            .map((item, index) => (
-              <Chip
-                key={`vocab-${index}-${item}`}
-                label={item}
-                variant="secondary"
-                className="text-xs"
-              />
-            ))}
-        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger className="cursor-default">
+              <div className="flex items-center gap-1.5">
+                {displayedItems.map((item, index) => (
+                  <Chip
+                    key={`vocab-${index}-${item}`}
+                    label={item}
+                    variant="secondary"
+                    className="text-xs"
+                  />
+                ))}
+                {remainingCount > 0 && (
+                  <Badge variant="secondary" className="h-5 text-xs">
+                    +{remainingCount} more
+                  </Badge>
+                )}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="w-[200px]">
+              <ScrollArea className="h-[200px] w-full rounded-md">
+                <div className="flex flex-wrap gap-1.5 p-1">
+                  {vocabularyItems.map((item, index) => (
+                    <Chip
+                      key={`vocab-tooltip-${index}-${item}`}
+                      label={item}
+                      variant="secondary"
+                      className="text-xs"
+                    />
+                  ))}
+                </div>
+              </ScrollArea>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       );
     },
   },

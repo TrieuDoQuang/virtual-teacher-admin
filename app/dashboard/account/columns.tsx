@@ -82,7 +82,7 @@ export const columns = ({
                   <Pencil width={16} height={16} />
                   Edit
                 </DropdownMenuItem>
-                <DropdownMenuItem
+                {/* <DropdownMenuItem
                   className="cursor-pointer flex items-center gap-2 text-red-600"
                   onClick={() => {
                     setData(row.original);
@@ -91,7 +91,7 @@ export const columns = ({
                 >
                   <Trash width={16} height={16} />
                   Delete
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
               </DropdownMenuContent>
             </DropdownMenu>
 

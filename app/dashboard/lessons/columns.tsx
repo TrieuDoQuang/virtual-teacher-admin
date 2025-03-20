@@ -22,6 +22,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Chip } from "@/components/chip";
@@ -32,7 +33,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
+import { ConfirmationDialog } from "@/components/confirmation-dialog";
 export interface DataTableActionsProps {
   setAction: (action: VirtualTeacherAction) => void;
   setData: (data: Lesson) => void;
@@ -97,16 +98,26 @@ export const columns = ({
                   <Pencil width={16} height={16} />
                   Edit
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer flex items-center gap-2 text-red-600"
-                  onClick={() => {
+                {/* <ConfirmationDialog
+                  dialogTrigger={
+                    <Button
+                      className="cursor-pointer flex items-center gap-2"
+                      onClick={() => {
+                        setData(row.original);
+                      }}
+                    >
+                      <Trash width={16} height={16} />
+                      Delete
+                    </Button>
+                  }
+                  onSubmit={() => {
                     setData(row.original);
-                    setShowDeleteDialog(true);
+                    handleDelete();
                   }}
-                >
-                  <Trash width={16} height={16} />
-                  Delete
-                </DropdownMenuItem>
+                  title="Delete Lesson"
+                  description={`Are you sure you want to delete this lesson <strong>${row.original.title}</strong>? This action cannot be undone.`}
+                  buttonText="Delete"
+                /> */}
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -114,14 +125,18 @@ export const columns = ({
               <DialogHeader>
                 <DialogTitle>Delete Lesson</DialogTitle>
                 <DialogDescription>
-                  Are you sure you want to delete this lesson? This action cannot be undone.
+                  Are you sure you want to delete this lesson? This action
+                  cannot be undone.
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowDeleteDialog(false)}
+                >
                   Cancel
                 </Button>
-                <Button 
+                <Button
                   variant="destructive"
                   className="cursor-pointer text-white"
                   onClick={() => {
@@ -157,11 +172,7 @@ export const columns = ({
     },
     accessorKey: "level",
     cell: ({ row }) => {
-      return (
-        <Badge variant="outline">
-          {row.original.level}
-        </Badge>
-      );
+      return <Badge variant="outline">{row.original.level}</Badge>;
     },
   },
   {
@@ -170,16 +181,14 @@ export const columns = ({
     },
     accessorKey: "topic",
     cell: ({ row }) => {
-      return (
-        <Badge variant="secondary">
-          {row.original.topic}
-        </Badge>
-      );
+      return <Badge variant="secondary">{row.original.topic}</Badge>;
     },
   },
   {
     header: ({ column }) => {
-      return <DataTableColumnHeader title="Learning Objectives" column={column} />;
+      return (
+        <DataTableColumnHeader title="Learning Objectives" column={column} />
+      );
     },
     accessorKey: "learningObjectives",
     cell: ({ row }) => {
@@ -193,7 +202,9 @@ export const columns = ({
             </TooltipTrigger>
             <TooltipContent>
               <ScrollArea className="h-[200px] w-[350px] rounded-md border p-4">
-                <p className="whitespace-pre-wrap">{row.original.learningObjectives}</p>
+                <p className="whitespace-pre-wrap">
+                  {row.original.learningObjectives}
+                </p>
               </ScrollArea>
             </TooltipContent>
           </Tooltip>
@@ -227,7 +238,9 @@ export const columns = ({
   },
   {
     header: ({ column }) => {
-      return <DataTableColumnHeader title="Conversation Structure" column={column} />;
+      return (
+        <DataTableColumnHeader title="Conversation Structure" column={column} />
+      );
     },
     accessorKey: "conversationStructure",
     cell: ({ row }) => {

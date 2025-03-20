@@ -15,12 +15,25 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import { VirtualTeacherAction } from "@/enums/framework-enum";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Pencil, Trash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
+import { ConfirmationDialog } from "@/components/confirmation-dialog";
 export interface DataTableActionsProps {
   setAction: (action: VirtualTeacherAction) => void;
   setData: (data: VirtualTeacher) => void;
@@ -84,16 +97,29 @@ export const columns = ({
                   <Pencil width={16} height={16} />
                   Edit
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer flex items-center gap-2 text-red-600"
-                  onClick={() => {
+                {/* <ConfirmationDialog
+                  dialogTrigger={
+                    <DialogTrigger asChild>
+                      <DropdownMenuItem
+                        className="cursor-pointer flex items-center gap-2 text-red-600"
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          setData(row.original);
+                        }}
+                      >
+                        <Trash width={16} height={16} />
+                        Delete
+                      </DropdownMenuItem>
+                    </DialogTrigger>
+                  }
+                  onSubmit={() => {
                     setData(row.original);
-                    setShowDeleteDialog(true);
+                    handleDelete();
                   }}
-                >
-                  <Trash width={16} height={16} />
-                  Delete
-                </DropdownMenuItem>
+                  title="Delete Teacher"
+                  description={`Are you sure you want to delete this teacher ${row.original.name}? This action cannot be undone.`}
+                  buttonText="Delete"
+                /> */}
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -101,14 +127,18 @@ export const columns = ({
               <DialogHeader>
                 <DialogTitle>Delete Account</DialogTitle>
                 <DialogDescription>
-                  Are you sure you want to delete this account? This action cannot be undone.
+                  Are you sure you want to delete this account? This action
+                  cannot be undone.
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowDeleteDialog(false)}
+                >
                   Cancel
                 </Button>
-                <Button 
+                <Button
                   variant="destructive"
                   className="cursor-pointer text-white"
                   onClick={() => {
@@ -132,9 +162,7 @@ export const columns = ({
     },
     accessorKey: "name",
     cell: ({ row }) => {
-      return (
-        <div className="font-medium">{row.original.name}</div>
-      );
+      return <div className="font-medium">{row.original.name}</div>;
     },
   },
   {
@@ -209,7 +237,6 @@ export const columns = ({
       );
     },
   },
-
 ];
 
 export const listHeaderSearch: SearchModel[] = [

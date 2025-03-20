@@ -34,7 +34,9 @@ export function ConfirmationDialog({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogDescription
+            dangerouslySetInnerHTML={{ __html: description }}
+          />
         </DialogHeader>
         <DialogFooter>
           <Button

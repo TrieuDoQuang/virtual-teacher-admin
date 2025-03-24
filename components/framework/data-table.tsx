@@ -32,7 +32,7 @@ import { Input } from "@/components/ui/input";
 import { DataTablePagination } from "@/components/framework/pagination";
 import { DataTableViewOptions } from "@/components/framework/column-toggle";
 import { SearchModel } from "@/models/searchModel";
-import { PlusIcon, TrashIcon } from "lucide-react";
+import { Delete, PlusIcon, TrashIcon } from "lucide-react";
 import { ConfirmationDialog } from "../confirmation-dialog";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useSelectStore } from "@/stores/useSelectStore";
@@ -60,6 +60,7 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [search, setSearch] = useState<SearchModel>(listHeaderSearch[0]);
   const { setSelectedItems } = useSelectStore();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const table = useReactTable({
     data,
@@ -94,6 +95,12 @@ export function DataTable<TData, TValue>({
     return listIds;
   };
 
+  // const handleRowAction = (action: string, data: TData) => {
+  //   if (action == "actions") {
+  //     setShowDeleteDialog(true);
+  //   }
+  // };
+
   // Update selected items when row selection changes
   useEffect(() => {
     const selectedRows = handleSelectedRows();
@@ -102,6 +109,17 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
+      <ConfirmationDialog
+        open={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onSubmit={() => {
+          onSubmitDelete();
+          setShowDeleteDialog(false);
+        }}
+        title="Delete"
+        description="Are you sure you want to delete this item?"
+        buttonText="Delete"
+      />
       {addEditDialog}
       <div className="flex items-center py-4">
         {/* Add new button */}
@@ -125,7 +143,10 @@ export function DataTable<TData, TValue>({
                 </Button>
               </DialogTrigger>
             }
-            onSubmit={onSubmitDelete}
+            onSubmit={() => {
+              onSubmitDelete();
+              setShowDeleteDialog(false);
+            }}
             title="Delete"
             description="Are you sure you want to delete these selected items?"
             buttonText="Delete"
@@ -202,7 +223,13 @@ export function DataTable<TData, TValue>({
                   data-state={row?.getIsSelected() && "selected"}
                 >
                   {row?.getVisibleCells().map((cell) => (
-                    <TableCell key={cell?.id}>
+                    <TableCell
+                      key={cell?.id}
+                      onClick={() => {
+                        console.log(cell?.column?.id, "cell?.column?.id");
+                        // handleRowAction(cell?.column?.id, row?.original);
+                      }}
+                    >
                       {flexRender(
                         cell?.column?.columnDef?.cell,
                         cell?.getContext()

@@ -9,42 +9,52 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { ReactNode } from "react";
+
+interface ConfirmationDialogProps {
+  title: string;
+  description: string;
+  buttonText: string;
+  onSubmit: () => void;
+  dialogTrigger?: ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
 export function ConfirmationDialog({
   title,
   description,
   buttonText,
   onSubmit,
   dialogTrigger,
-}: {
-  title: string;
-  description: string;
-  buttonText: string;
-  onSubmit: () => void;
-  dialogTrigger: React.ReactNode;
-}) {
-  const [open, setOpen] = useState(false);
-  const handleSubmit = () => {
-    onSubmit();
-  };
-
+  open,
+  onOpenChange,
+}: ConfirmationDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       {dialogTrigger}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription
-            dangerouslySetInnerHTML={{ __html: description }}
-          />
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button
-            className="cursor-pointer"
+            type="button"
             variant="outline"
             onClick={() => {
-              handleSubmit();
-              setOpen(false);
+              onOpenChange?.(false);
+            }}
+            className="cursor-pointer"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            className="cursor-pointer"
+            onClick={() => {
+              onSubmit();
+              onOpenChange?.(false);
             }}
           >
             {buttonText}

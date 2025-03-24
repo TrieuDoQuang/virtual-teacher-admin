@@ -27,9 +27,20 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { createLesson, recommendLesson, updateLesson } from "@/services/lessonService";
+import {
+  createLesson,
+  recommendLesson,
+  updateLesson,
+} from "@/services/lessonService";
 import { toast } from "sonner";
-
+import { Loader2, Info, CheckCircle } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { CustomToast } from "@/components/custom-toast";
 // Schema definition remains unchanged
 const dialogSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -40,7 +51,10 @@ const dialogSchema = z.object({
   conversationStructure: z
     .string()
     .min(1, "Conversation Structure is required"),
-  durationEstimation: z.number().min(1, "Duration Estimation is required"),
+  durationEstimation: z
+    .number()
+    .min(10, "Duration must be at least 10 minutes")
+    .max(30, "Duration must not exceed 30 minutes"),
 });
 
 type DialogFormData = z.infer<typeof dialogSchema>;
@@ -61,10 +75,6 @@ export function AddEditLessonDialog({
   resetData,
 }: AddEditLessonDialogProps) {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [promptInput, setPromptInput] = useState(
-    "I want to generate a topic about sport, A1 level, estimate 20 minutes"
-  );
-  const [showPromptInput, setShowPromptInput] = useState(false);
 
   const {
     register,
@@ -73,6 +83,7 @@ export function AddEditLessonDialog({
     reset,
     setValue,
     watch,
+    
   } = useForm<DialogFormData>({
     resolver: zodResolver(dialogSchema),
     defaultValues: {
@@ -110,28 +121,48 @@ export function AddEditLessonDialog({
     }
   }, [isOpen, data, action, setValue, reset]);
 
+  const checkValidation = (isCheckAll: boolean = false) => {
+    const title = watch("title");
+    const level = watch("level");
+    const topic = watch("topic");
+    const durationEstimation = Number(watch("durationEstimation"));
+
+    if (isCheckAll) {
+      return !title || !level || !topic || !durationEstimation || durationEstimation < 10 || durationEstimation > 30;
+    }
+
+    return !title || !level || !topic || !durationEstimation;
+  };
+
   const generateWithAI = async () => {
     try {
       setIsGenerating(true);
+      const promptInput = `I want to generate a topic about ${watch(
+        "topic"
+      )}, ${watch("level")} level, estimate ${watch(
+        "durationEstimation"
+      )} minutes`;
 
       const response = await recommendLesson(promptInput);
 
       const result: any = response;
 
       if (result) {
-        setValue("title", result?.data?.title);
-        setValue("level", result?.data?.level);
-        setValue("topic", result?.data?.topic);
+        toast.custom((t) => (
+          <CustomToast message="Lesson generated successfully" type="success" />
+        ));
         setValue("learningObjectives", result?.data?.learningObjectives);
         setValue("vocabulary", result?.data?.vocabulary);
         setValue("conversationStructure", result?.data?.conversationStructure);
         setValue("durationEstimation", result?.data?.durationEstimation);
 
         // Hide prompt input after successful generation
-        setShowPromptInput(false);
       }
     } catch (error) {
       console.error("Error generating AI content:", error);
+      toast.custom((t) => (
+        <CustomToast message="Error generating AI content" type="error" />
+      ));
     } finally {
       setIsGenerating(false);
     }
@@ -153,38 +184,40 @@ export function AddEditLessonDialog({
 
       if (response.statusCode === 200) {
         onOpenChange(false);
-        setShowPromptInput(false);
-        toast.success("Lesson created successfully");
+        toast.custom((t) => (
+          <CustomToast message="Lesson created successfully" type="success" />
+        ));
         reset();
         resetData?.();
       }
-    }
-    else if (action === VirtualTeacherAction.UPDATE) {
+    } else if (action === VirtualTeacherAction.UPDATE) {
       lesson.id = data?.id;
 
       console.log(lesson);
-      
+
       const response: any = await updateLesson(lesson);
 
       if (response.statusCode === 200) {
         onOpenChange(false);
         toast.success("Lesson updated successfully");
-        setShowPromptInput(false); 
         reset();
         resetData?.();
-
       }
     }
   };
 
   const onClickCancel = () => {
     onOpenChange(false);
-    setShowPromptInput(false);
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[800px] lg:max-w-[900px] p-0 overflow-hidden bg-white dark:bg-slate-950 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800">
+      <DialogContent 
+        className="sm:max-w-[800px] lg:max-w-[900px] p-0 overflow-hidden bg-white dark:bg-slate-950 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800"
+        onPointerDownOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <DialogHeader className="p-6 bg-slate-50/95 dark:bg-slate-900/95 border-b border-slate-200 dark:border-slate-800 backdrop-blur-none">
           <DialogTitle className="text-2xl font-bold tracking-tight">
             {action === VirtualTeacherAction.CREATE
@@ -200,89 +233,6 @@ export function AddEditLessonDialog({
 
         <form onSubmit={handleSubmit(onSubmit)} className="px-6">
           {/* AI Generation Section */}
-          <div className="py-3 border-b">
-            <div className="flex flex-col gap-2">
-              {showPromptInput ? (
-                <div className="space-y-2">
-                  <div className="flex items-start gap-2">
-                    <Textarea
-                      value={promptInput}
-                      onChange={(e) => setPromptInput(e.target.value)}
-                      className="flex-1 min-h-[60px] max-h-[100px]"
-                      placeholder="Describe the lesson you want to generate..."
-                    />
-                  </div>
-                  <div className="flex gap-2 justify-end">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowPromptInput(false)}
-                      disabled={isGenerating}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={generateWithAI}
-                      disabled={isGenerating}
-                    >
-                      {isGenerating ? (
-                        <>
-                          <svg
-                            className="animate-spin -ml-1 mr-2 h-3 w-3"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
-                          Generating...
-                        </>
-                      ) : (
-                        "Generate"
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowPromptInput(true)}
-                  className="flex items-center gap-2"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M12 2v6.5M12 2l5 3.5M12 2 7 5.5M17 17.5L12 21v-6.5M12 14.5 7 17.5 12 21M7 6.5v11" />
-                  </svg>
-                  Generate with AI
-                </Button>
-              )}
-            </div>
-          </div>
 
           <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent pr-2">
             {/* Basic Information Section */}
@@ -295,8 +245,18 @@ export function AddEditLessonDialog({
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="title" className="font-medium">
+                      <Label htmlFor="title" className="font-medium flex items-center gap-2">
                         Title <span className="text-red-500">*</span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Info className="h-4 w-4 text-slate-500" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Enter a descriptive title for your lesson</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </Label>
                       <Input
                         id="title"
@@ -304,7 +264,7 @@ export function AddEditLessonDialog({
                         className={cn(
                           "transition-all",
                           errors.title &&
-                          "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
+                            "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
                         )}
                         placeholder="Enter lesson title"
                       />
@@ -316,8 +276,18 @@ export function AddEditLessonDialog({
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="level" className="font-medium">
+                      <Label htmlFor="level" className="font-medium flex items-center gap-2">
                         Level <span className="text-red-500">*</span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Info className="h-4 w-4 text-slate-500" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Select the appropriate proficiency level for your students</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </Label>
                       <Select
                         onValueChange={(value) => setValue("level", value)}
@@ -347,8 +317,18 @@ export function AddEditLessonDialog({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="topic" className="font-medium">
+                    <Label htmlFor="topic" className="font-medium flex items-center gap-2">
                       Topic <span className="text-red-500">*</span>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Info className="h-4 w-4 text-slate-500" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Enter the main subject or theme of your lesson</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </Label>
                     <Input
                       id="topic"
@@ -356,7 +336,7 @@ export function AddEditLessonDialog({
                       className={cn(
                         "transition-all",
                         errors.topic &&
-                        "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
+                          "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
                       )}
                       placeholder="Enter lesson topic (e.g., 'Daily Routines', 'Business Negotiations')"
                     />
@@ -368,17 +348,29 @@ export function AddEditLessonDialog({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="durationEstimation" className="font-medium">
+                    <Label htmlFor="durationEstimation" className="font-medium flex items-center gap-2">
                       Duration (minutes) <span className="text-red-500">*</span>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Info className="h-4 w-4 text-slate-500" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Enter lesson duration (10-30 minutes)</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </Label>
                     <Input
                       id="durationEstimation"
                       type="number"
-                      {...register("durationEstimation")}
-                      className={cn(
+                      {...register("durationEstimation", {
+                        valueAsNumber: true,
+                      })}
+                      className={cn(  
                         "max-w-[180px] transition-all",
                         errors.durationEstimation &&
-                        "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
+                          "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
                       )}
                       placeholder="0"
                     />
@@ -395,19 +387,43 @@ export function AddEditLessonDialog({
             {/* Lesson Content Section */}
             <Card className="border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-950">
               <CardContent className="p-4">
-                <h3 className="font-medium text-sm text-slate-500 dark:text-slate-400 mb-4">
-                  Lesson Content
-                </h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-medium text-sm text-slate-500 dark:text-slate-400">
+                    Lesson Content
+                  </h3>
+
+                  {/* Generate With AI */}
+                  <Button
+                    type="button"
+                    variant="default"
+                    onClick={generateWithAI}
+                    className="px-4"
+                    disabled={checkValidation() || isSubmitting || isGenerating}
+                  >
+                    Generate With AI
+                    {isGenerating && (
+                      <span className="ml-2">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      </span>
+                    )}
+                  </Button>
+                </div>
 
                 <div className="space-y-5">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label
-                        htmlFor="learningObjectives"
-                        className="font-medium"
-                      >
-                        Learning Objectives{" "}
-                        <span className="text-red-500">*</span>
+                      <Label htmlFor="learningObjectives" className="font-medium flex items-center gap-2">
+                        Learning Objectives <span className="text-red-500">*</span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Info className="h-4 w-4 text-slate-500" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>List the specific skills and knowledge students will gain from this lesson</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </Label>
                       <span className="text-xs text-slate-500">
                         List key skills students will acquire
@@ -417,11 +433,12 @@ export function AddEditLessonDialog({
                       id="learningObjectives"
                       {...register("learningObjectives")}
                       className={cn(
-                        "h-[120px] resize-none transition-all",
+                        "min-h-[120px] h-auto max-h-[400px] whitespace-pre-wrap break-words transition-all",
                         errors.learningObjectives &&
-                        "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
+                          "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
                       )}
                       placeholder="e.g., 'By the end of this lesson, students will be able to...'"
+                      rows={5}
                     />
                     {errors.learningObjectives && (
                       <p className="text-sm text-red-500">
@@ -432,8 +449,18 @@ export function AddEditLessonDialog({
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="vocabulary" className="font-medium">
+                      <Label htmlFor="vocabulary" className="font-medium flex items-center gap-2">
                         Vocabulary <span className="text-red-500">*</span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Info className="h-4 w-4 text-slate-500" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>List key words and phrases that will be taught in this lesson</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </Label>
                       <span className="text-xs text-slate-500">
                         List key words and phrases
@@ -443,11 +470,12 @@ export function AddEditLessonDialog({
                       id="vocabulary"
                       {...register("vocabulary")}
                       className={cn(
-                        "h-[120px] resize-none transition-all",
+                        "min-h-[120px] h-auto max-h-[400px] whitespace-pre-wrap break-words transition-all",
                         errors.vocabulary &&
-                        "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
+                          "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
                       )}
                       placeholder="Enter key vocabulary words and phrases for this lesson"
+                      rows={5}
                     />
                     {errors.vocabulary && (
                       <p className="text-sm text-red-500">
@@ -458,12 +486,18 @@ export function AddEditLessonDialog({
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label
-                        htmlFor="conversationStructure"
-                        className="font-medium"
-                      >
-                        Conversation Structure{" "}
-                        <span className="text-red-500">*</span>
+                      <Label htmlFor="conversationStructure" className="font-medium flex items-center gap-2">
+                        Conversation Structure <span className="text-red-500">*</span>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Info className="h-4 w-4 text-slate-500" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Describe the flow and organization of your lesson</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </Label>
                       <span className="text-xs text-slate-500">
                         Outline the lesson flow
@@ -473,12 +507,12 @@ export function AddEditLessonDialog({
                       id="conversationStructure"
                       {...register("conversationStructure")}
                       className={cn(
-                        "h-[120px] resize-none transition-all",
+                        "min-h-[120px] h-auto max-h-[400px] whitespace-pre-wrap break-words transition-all",
                         errors.conversationStructure &&
-                        "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
+                          "border-red-500 dark:border-red-500 focus-visible:ring-red-500"
                       )}
                       placeholder="Describe how the conversation should flow (introduction, practice, conclusion, etc.)"
-                      style={{  }}
+                      rows={5}
                     />
                     {errors.conversationStructure && (
                       <p className="text-sm text-red-500">
@@ -503,14 +537,14 @@ export function AddEditLessonDialog({
             <Button
               type="submit"
               variant="default"
-              disabled={isSubmitting}
+              disabled={isSubmitting || checkValidation(true)}
               onClick={handleSubmit(onSubmit)}
             >
               {isSubmitting
                 ? "Saving..."
                 : action === VirtualTeacherAction.CREATE
-                  ? "Create Lesson"
-                  : "Save"}
+                ? "Create Lesson"
+                : "Save"}
             </Button>
           </DialogFooter>
         </form>
@@ -518,3 +552,4 @@ export function AddEditLessonDialog({
     </Dialog>
   );
 }
+

@@ -38,12 +38,10 @@ export default function AccountPage() {
       const data = await getAllLessons();
 
       setLessons(data || []);
-
     } catch (err: any) {
       setError(err.message || "Failed to fetch lessons");
 
       console.error("Error fetching lessons:", err);
-
     } finally {
       setIsLoading(false);
     }
@@ -60,10 +58,9 @@ export default function AccountPage() {
   };
 
   const handleDelete = async () => {
-    let ids = selectedItems.map(item => item?.id);
+    let ids = selectedItems.map((item) => item?.id);
 
     if (ids.length === 0) {
-      console.log(selectedData, "selectedData");
       ids = [selectedData?.id];
     }
     const response = await deleteLesson(ids);
@@ -72,7 +69,6 @@ export default function AccountPage() {
       toast.success("Lesson deleted successfully");
     }
   };
-
 
   if (isLoading) {
     return (

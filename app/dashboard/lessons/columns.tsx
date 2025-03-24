@@ -74,14 +74,12 @@ export const columns = ({
       return <DataTableColumnHeader title="Actions" column={column} />;
     },
     cell: ({ row }) => {
-      const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
       return (
         <div className="text-left">
-          <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
                   <span className="sr-only">Open menu</span>
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
@@ -98,57 +96,20 @@ export const columns = ({
                   <Pencil width={16} height={16} />
                   Edit
                 </DropdownMenuItem>
-                {/* <ConfirmationDialog
-                  dialogTrigger={
-                    <Button
-                      className="cursor-pointer flex items-center gap-2"
-                      onClick={() => {
-                        setData(row.original);
-                      }}
-                    >
-                      <Trash width={16} height={16} />
-                      Delete
-                    </Button>
-                  }
-                  onSubmit={() => {
+                {/* <DropdownMenuItem
+                  className="cursor-pointer flex items-center gap-2"
+                  onClick={() => {
+                    setAction(VirtualTeacherAction.DELETE);
+                    
                     setData(row.original);
-                    handleDelete();
                   }}
-                  title="Delete Lesson"
-                  description={`Are you sure you want to delete this lesson <strong>${row.original.title}</strong>? This action cannot be undone.`}
-                  buttonText="Delete"
-                /> */}
+                >
+                  <Trash width={16} height={16} />
+                  Delete
+                </DropdownMenuItem> */}
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Delete Lesson</DialogTitle>
-                <DialogDescription>
-                  Are you sure you want to delete this lesson? This action
-                  cannot be undone.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowDeleteDialog(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="destructive"
-                  className="cursor-pointer text-white"
-                  onClick={() => {
-                    handleDelete();
-                    setShowDeleteDialog(false);
-                  }}
-                >
-                  Delete
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
         </div>
       );
     },

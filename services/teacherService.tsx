@@ -23,7 +23,7 @@ export async function createTeacher(teacher: CreateTeacherRequest) {
     } catch (error) {
         console.error("Error creating teacher:", error);
         throw new Error(
-            error instanceof Error ? error.message : "Failed to create teacher"
+            error instanceof Error ? error.message : "Failed to create teacher!"
         );
     }
 }

@@ -1,64 +1,146 @@
 "use client";
 
-import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell, ResponsiveContainer } from "recharts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-
-const monthlyEngagementData = [
-  { date: "2024-01", users: 1200, sessions: 3800, avgDuration: 45 },
-  { date: "2024-02", users: 1350, sessions: 4200, avgDuration: 48 },
-  { date: "2024-03", users: 1500, sessions: 4600, avgDuration: 52 },
-  { date: "2024-04", users: 1800, sessions: 5100, avgDuration: 55 },
-  { date: "2024-05", users: 2100, sessions: 5800, avgDuration: 58 },
-  { date: "2024-06", users: 2400, sessions: 6200, avgDuration: 60 },
-];
+import { useEffect, useState } from "react";
+import { interactionCount } from "@/services/staticService";
 
 export function UserEngagementChart() {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await interactionCount();
+        if (response?.data) {
+          const { total, byRole } = response.data;
+          
+          // Transform data for chart
+          const chartData = Object.entries(byRole).map(([role, count]) => ({
+            role,
+            count: count as number,
+          }));
+          
+          setData({ 
+            total, 
+            chartData 
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching interaction data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const colors = [
+    "hsl(var(--primary))",
+    "hsl(var(--secondary))",
+  ];
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 border border-gray-200 rounded-md shadow-lg">
+          <p className="font-medium text-sm">Role: {label}</p>
+          <p className="text-sm">Interactions: {payload[0].value}</p>
+          <p className="text-xs text-gray-500">
+            {Math.round((payload[0].value / data.total) * 100)}% of total
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Interaction Distribution</CardTitle>
+          <CardDescription>Total interactions by role</CardDescription>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center h-[300px]">
+          Loading...
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Monthly User Engagement</CardTitle>
-        <CardDescription>Active users and session trends</CardDescription>
+        <CardTitle>Interaction Distribution</CardTitle>
+        <CardDescription>Total interactions by role ({data?.total || 0} interactions)</CardDescription>
       </CardHeader>
       <CardContent>
-        <LineChart
-          width={400}
-          height={300}
-          data={monthlyEngagementData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-        >
-          <XAxis 
-            dataKey="date" 
-            stroke="currentColor"
-            tick={{ fill: "currentColor" }}
-          />
-          <YAxis 
-            stroke="currentColor"
-            tick={{ fill: "currentColor" }}
-          />
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: "hsl(var(--card))",
-              border: "1px solid hsl(var(--border))",
-              color: "currentColor",
-              borderRadius: "6px",
-            }}
-          />
-          <Legend />
-          <Line 
-            type="monotone" 
-            dataKey="users" 
-            name="Active Users"
-            stroke="hsl(var(--primary))" 
-            strokeWidth={2}
-          />
-          <Line 
-            type="monotone" 
-            dataKey="sessions" 
-            name="Total Sessions"
-            stroke="hsl(var(--secondary))" 
-            strokeWidth={2}
-          />
-        </LineChart>
+        {data?.chartData && data.chartData.length > 0 ? (
+          <div>
+            <div className="relative" style={{ height: "300px" }}>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart
+                  data={data.chartData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
+                  <XAxis 
+                    dataKey="role" 
+                    stroke="currentColor"
+                    tick={{ fill: "currentColor" }}
+                    axisLine={{ stroke: "currentColor", opacity: 0.3 }}
+                    tickLine={{ stroke: "currentColor", opacity: 0.3 }}
+                  />
+                  <YAxis 
+                    stroke="currentColor"
+                    tick={{ fill: "currentColor" }}
+                    axisLine={{ stroke: "currentColor", opacity: 0.3 }}
+                    tickLine={{ stroke: "currentColor", opacity: 0.3 }}
+                  />
+                  <Tooltip 
+                    content={<CustomTooltip />}
+                    cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
+                    wrapperStyle={{ 
+                      zIndex: 1000, 
+                      position: "relative",
+                      pointerEvents: "auto"
+                    }}
+                  />
+                  <Bar 
+                    dataKey="count" 
+                    radius={[4, 4, 0, 0]}
+                    animationDuration={750}
+                  >
+                    {data.chartData.map((entry: any, index: number) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={colors[index % colors.length]} 
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-4">
+              {data.chartData.map((entry: any, index: number) => (
+                <div key={`stat-${index}`} className="flex flex-col items-center">
+                  <div className="text-2xl font-bold">{entry.count}</div>
+                  <div className="text-sm text-muted-foreground">{entry.role}</div>
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    {Math.round((entry.count / data.total) * 100)}% of total
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center h-[300px]">
+            No data available
+          </div>
+        )}
       </CardContent>
     </Card>
   );

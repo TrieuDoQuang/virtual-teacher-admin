@@ -146,7 +146,7 @@ export function VisitorsPieChart() {
       <CardContent className="pt-4">
         {data && data.length > 0 && (
           <div className="grid grid-cols-2 gap-2">
-            {data.filter(entry => entry.value > 0).map((entry: any, index: number) => (
+            {data.filter((entry: {name: string, value: number, fill: string}) => entry.value > 0).map((entry: any, index: number) => (
               <div key={`legend-${index}`} className="flex items-center gap-2">
                 <div 
                   className="h-3 w-3 rounded-full" 

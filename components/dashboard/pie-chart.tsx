@@ -13,8 +13,14 @@ import {
 import { useEffect, useState } from "react"
 import { learnersByLevel } from "@/services/staticService"
 
+interface ChartDataItem {
+  name: string;
+  value: number;
+  fill: string;
+}
+
 export function VisitorsPieChart() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<ChartDataItem[] | null>(null);
   const [totalLearners, setTotalLearners] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -26,7 +32,7 @@ export function VisitorsPieChart() {
           // Sort levels in a specific order
           const levelOrder = ["ENTRANCE_TEST", "A1", "A2", "B1", "B2", "C1", "C2"];
           
-          const chartData = levelOrder.map((level, index) => ({
+          const chartData: ChartDataItem[] = levelOrder.map((level, index) => ({
             name: level,
             value: (response.data[level] as number) || 0,
             fill: `hsl(var(--chart-${(index % 6) + 1}))`
@@ -101,7 +107,7 @@ export function VisitorsPieChart() {
                   outerRadius={80}
                   paddingAngle={2}
                 >
-                  {data.map((entry: any, index: number) => (
+                  {data.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
                   <Label
@@ -146,7 +152,7 @@ export function VisitorsPieChart() {
       <CardContent className="pt-4">
         {data && data.length > 0 && (
           <div className="grid grid-cols-2 gap-2">
-            {data.filter((entry: {name: string, value: number, fill: string}) => entry.value > 0).map((entry: any, index: number) => (
+            {data.filter(entry => entry.value > 0).map((entry, index) => (
               <div key={`legend-${index}`} className="flex items-center gap-2">
                 <div 
                   className="h-3 w-3 rounded-full" 

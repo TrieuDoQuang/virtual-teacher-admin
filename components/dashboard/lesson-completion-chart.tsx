@@ -41,7 +41,7 @@ export function LessonCompletionChart() {
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-md shadow-lg">
+        <div className="bg-white items-center  p-3 border border-gray-200 rounded-md shadow-lg">
           <p className="font-medium text-sm">{payload[0].name}</p>
           <p className="text-sm">Conversations: {payload[0].value}</p>
           {data?.total && (
@@ -58,7 +58,7 @@ export function LessonCompletionChart() {
   if (loading) {
     return (
       <Card>
-        <CardHeader>
+        <CardHeader className="items-center pb-0">
           <CardTitle>Conversation Completion</CardTitle>
           <CardDescription>Completed vs. in progress conversations</CardDescription>
         </CardHeader>
@@ -71,11 +71,13 @@ export function LessonCompletionChart() {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="items-center pb-0">
         <CardTitle>Conversation Completion</CardTitle>
-        <CardDescription>
-          {data?.completionRate ? `Completion rate: ${data.completionRate.toFixed(1)}%` : 'No data available'}
-        </CardDescription>
+        <CardDescription
+          dangerouslySetInnerHTML={{
+            __html: data?.completionRate ? `Completion rate: <strong>${data.completionRate.toFixed(1)}%</strong>` : 'No data available'
+          }}
+        />
       </CardHeader>
       <CardContent>
         {data?.chartData && data.chartData.length > 0 ? (

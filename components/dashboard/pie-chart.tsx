@@ -93,7 +93,6 @@ export function VisitorsPieChart() {
                   content={<CustomTooltip />}
                   wrapperStyle={{ 
                     zIndex: 1000, 
-                    position: "relative",
                     pointerEvents: "auto" 
                   }}
                 />

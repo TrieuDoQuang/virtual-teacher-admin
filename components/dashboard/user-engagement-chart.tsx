@@ -60,7 +60,7 @@ export function UserEngagementChart() {
   if (loading) {
     return (
       <Card>
-        <CardHeader>
+        <CardHeader className="items-center pb-0">
           <CardTitle>Interaction Distribution</CardTitle>
           <CardDescription>Total interactions by role</CardDescription>
         </CardHeader>
@@ -73,9 +73,9 @@ export function UserEngagementChart() {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="items-center pb-0">
         <CardTitle>Interaction Distribution</CardTitle>
-        <CardDescription>Total interactions by role ({data?.total || 0} interactions)</CardDescription>
+        <CardDescription>Total interactions by role <strong>({data?.total || 0} interactions)</strong></CardDescription>
       </CardHeader>
       <CardContent>
         {data?.chartData && data.chartData.length > 0 ? (
@@ -105,7 +105,6 @@ export function UserEngagementChart() {
                     cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
                     wrapperStyle={{ 
                       zIndex: 1000, 
-                      position: "relative",
                       pointerEvents: "auto"
                     }}
                   />

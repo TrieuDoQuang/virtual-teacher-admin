@@ -47,7 +47,7 @@ export function SkillProgressChart() {
   if (loading) {
     return (
       <Card>
-        <CardHeader>
+        <CardHeader className="items-center pb-0">
           <CardTitle>Lessons by Level</CardTitle>
           <CardDescription>Distribution of lessons across proficiency levels</CardDescription>
         </CardHeader>
@@ -72,7 +72,7 @@ export function SkillProgressChart() {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="items-center pb-0">
         <CardTitle>Lessons by Level</CardTitle>
         <CardDescription>Distribution of lessons across proficiency levels</CardDescription>
       </CardHeader>
@@ -104,7 +104,6 @@ export function SkillProgressChart() {
                 cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
                 wrapperStyle={{ 
                   zIndex: 1000, 
-                  position: "relative",
                   pointerEvents: "auto" 
                 }}
               />

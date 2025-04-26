@@ -2,8 +2,8 @@
 
 import { VisitorsPieChart } from "@/components/dashboard/pie-chart";
 import { SkillProgressChart } from "@/components/dashboard/skill-progress-chart";
-import { UserEngagementChart } from "@/components/dashboard/user-engagement-chart";
-import { LessonCompletionChart } from "@/components/dashboard/lesson-completion-chart";
+import { LearnersAgeChart } from "@/components/dashboard/learners-age-chart";
+import { MessagesActivityChart } from "@/components/dashboard/messages-activity-chart";
 
 export default function Dashboard() {
   return (
@@ -13,8 +13,8 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <VisitorsPieChart />
         <SkillProgressChart />
-        <UserEngagementChart />
-        <LessonCompletionChart />
+        <LearnersAgeChart />
+        <MessagesActivityChart />
       </div>
     </div>
   );

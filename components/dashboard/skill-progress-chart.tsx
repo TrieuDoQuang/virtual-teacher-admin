@@ -27,7 +27,7 @@ export function SkillProgressChart() {
         const lessonResponse = await lessonsByLevel();
         if (lessonResponse?.data) {
           // Sort levels in a specific order
-          const levelOrder = ["ENTRANCE_TEST", "A1", "A2", "B1", "B2", "C1", "C2"];
+          const levelOrder = ["ENTRANCE TEST", "A1", "A2", "B1", "B2", "C1", "C2"];
           
           const chartData = levelOrder.map(level => ({
             level,
@@ -176,12 +176,12 @@ export function SkillProgressChart() {
       <CardContent>
         {/* Age Group Titles Section */}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="w-full">
           {/* Lessons by Level Chart */}
           <div>
             <h3 className="text-sm font-medium mb-2 text-center">Lessons by Level</h3>
             {lessonData && lessonData.length > 0 ? (
-              <div className="relative" style={{ height: "300px" }}>
+              <div className="relative" style={{ height: "300px", width: "100%" }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={lessonData}
@@ -233,97 +233,7 @@ export function SkillProgressChart() {
           </div>
 
           {/* Learners by Age Group Chart - Simple BarChart */}
-          <div>
-            <h3 className="text-sm font-medium mb-2 text-center">Learners by Age Group</h3>
           
-            {learnerData && learnerData.length > 0 ? (
-              <div className="relative" style={{ height: "300px" }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={learnerData}
-                    margin={{ top: 30, right: 30, left: 20, bottom: 40 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis 
-                      dataKey="ageGroup" 
-                      stroke="currentColor"
-                      tick={{ 
-                        fill: "currentColor", 
-                        fontSize: 12, 
-                        fontWeight: "500",
-                        width: 80,
-                        textAnchor: "middle"
-                      }}
-                      axisLine={{ stroke: "currentColor" }}
-                      tickLine={{ stroke: "currentColor" }}
-                      height={70}
-                      tickMargin={8}
-                      interval={0}
-                    />
-                    <YAxis 
-                      stroke="currentColor"
-                      tick={{ fill: "currentColor", fontSize: 13 }}
-                      axisLine={{ stroke: "currentColor" }}
-                      tickLine={{ stroke: "currentColor" }}
-                      domain={[0, (dataMax: number) => Math.max(dataMax + 1, 3)]}
-                      allowDecimals={false}
-                    />
-                    <Tooltip
-                      content={({ active, payload, label }) => {
-                        if (active && payload && payload.length) {
-                          return (
-                            <div className="bg-white p-3 border border-gray-200 rounded-md shadow-lg">
-                              <p className="font-medium">Age Group: {label}</p>
-                              <p className="font-bold">{payload[0].value} learner{payload[0].value !== 1 ? 's' : ''}</p>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Bar 
-                      dataKey="count" 
-                      name="Learners"
-                      radius={[4, 4, 0, 0]}
-                      barSize={60}
-                    >
-                      {learnerData.map((entry: { ageGroup: string; count: number }, index: number) => (
-                        <Cell 
-                          key={`cell-${index}`}
-                          fill={colors[index % colors.length]}
-                          fillOpacity={0.85}
-                        />
-                      ))}
-                      <LabelList 
-                        dataKey="count" 
-                        position="top" 
-                        style={{ fill: 'currentColor', fontSize: 14, fontWeight: 'bold' }}
-                        formatter={(value: number, entry: any) => {
-                          if (!entry || typeof entry !== 'object') return `${value}`;
-                          return `${value}`;
-                        }}
-                      />
-                    </Bar>
-                    <Legend
-                      verticalAlign="top"
-                      height={36}
-                      formatter={(value, entry, index) => {
-                        return (
-                          <span style={{ color: 'currentColor', fontSize: '13px' }}>
-                            {value}
-                          </span>
-                        );
-                      }}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center h-[300px]">
-                No data available
-              </div>
-            )}
-          </div>
         </div>
       </CardContent>
     </Card>

@@ -22,4 +22,17 @@ export async function conversationCompletionStats() {
     return response.data;
 }
 
+export async function learnersByAgeGroup() {
+    const response: Response<{
+        ageGroup: string;
+        count: number;
+    }[]> = await apiPrivate.get("/statistics/learnersByAgeGroup");
+    return response.data;
+}
+
+export async function countMessagesByDay(day: number) {
+    const response: Response<any> = await apiPrivate.get(`/statistics/countMessagesByDay?days=${day}`);
+    return response.data;
+}
+
 

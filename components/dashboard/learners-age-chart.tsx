@@ -52,10 +52,10 @@ export function LearnersAgeChart() {
             ageGroup: item.ageGroup,
             count: item.count,
             fill: item.ageGroup === "Under 18" 
-              ? "hsl(var(--primary))" 
+              ? "var(--chart-color-1)" 
               : item.ageGroup === "From 18 to 30" 
-                ? "hsl(var(--secondary))" 
-                : "hsl(var(--accent))",
+                ? "var(--chart-color-2)" 
+                : "var(--chart-color-3)",
           }));
 
           const total = chartData.reduce((acc: number, curr: { count: number }) => acc + curr.count, 0);
@@ -77,7 +77,46 @@ export function LearnersAgeChart() {
     fetchData();
   }, [timePeriod]);
 
-  const colors = ["hsl(var(--primary))", "hsl(var(--secondary))", "hsl(var(--accent))"];
+  // Define colors using CSS variables that will change with theme
+  useEffect(() => {
+    // Check if dark mode is active
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    
+    // Set different color values based on the theme
+    if (isDarkMode) {
+      document.documentElement.style.setProperty('--chart-color-1', 'hsl(217, 91%, 60%)'); // Bright blue
+      document.documentElement.style.setProperty('--chart-color-2', 'hsl(142, 76%, 50%)');  // Bright green
+      document.documentElement.style.setProperty('--chart-color-3', 'hsl(346, 84%, 61%)');  // Bright pink
+    } else {
+      document.documentElement.style.setProperty('--chart-color-1', 'hsl(var(--primary))');
+      document.documentElement.style.setProperty('--chart-color-2', 'hsl(var(--secondary))');
+      document.documentElement.style.setProperty('--chart-color-3', 'hsl(var(--accent))');
+    }
+    
+    // Listen for theme changes and update colors accordingly
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          const isDarkMode = document.documentElement.classList.contains('dark');
+          if (isDarkMode) {
+            document.documentElement.style.setProperty('--chart-color-1', 'hsl(217, 91%, 60%)');
+            document.documentElement.style.setProperty('--chart-color-2', 'hsl(142, 76%, 50%)');
+            document.documentElement.style.setProperty('--chart-color-3', 'hsl(346, 84%, 61%)');
+          } else {
+            document.documentElement.style.setProperty('--chart-color-1', 'hsl(var(--primary))');
+            document.documentElement.style.setProperty('--chart-color-2', 'hsl(var(--secondary))');
+            document.documentElement.style.setProperty('--chart-color-3', 'hsl(var(--accent))');
+          }
+        }
+      });
+    });
+    
+    observer.observe(document.documentElement, { attributes: true });
+    
+    return () => observer.disconnect();
+  }, []);
+
+  const colors = ["var(--chart-color-1)", "var(--chart-color-2)", "var(--chart-color-3)"];
 
   const handlePeriodChange = (value: string) => {
     setTimePeriod(value);
@@ -86,10 +125,10 @@ export function LearnersAgeChart() {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-md shadow-lg">
+        <div className="bg-background p-3 border border-border rounded-md shadow-lg">
           <p className="font-medium text-sm">Age Group: {label || payload[0].name}</p>
           <p className="text-sm">Learners: {payload[0].value}</p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             {Math.round((payload[0].value / data.total) * 100)}% of total
           </p>
         </div>
@@ -118,11 +157,13 @@ export function LearnersAgeChart() {
         <BarChart
           data={data.chartData}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+          className="text-foreground"
         >
           <CartesianGrid
             strokeDasharray="3 3"
             vertical={false}
             opacity={0.2}
+            stroke="currentColor"
           />
           <XAxis
             dataKey="ageGroup"
@@ -147,13 +188,16 @@ export function LearnersAgeChart() {
           />
           <Bar
             dataKey="count"
+            fill="var(--chart-color-1)"
             radius={[4, 4, 0, 0]}
             animationDuration={750}
+            className="!fill-foreground"
           >
             {data.chartData.map((entry: any, index: number) => (
               <Cell
                 key={`cell-${index}`}
                 fill={entry.fill}
+                className="!opacity-90"
               />
             ))}
           </Bar>
@@ -165,7 +209,7 @@ export function LearnersAgeChart() {
   const renderPieChart = () => (
     <div className="relative" style={{ height: "300px" }}>
       <ResponsiveContainer width="100%" height={300}>
-        <PieChart>
+        <PieChart className="text-foreground">
           <Pie
             data={data.chartData}
             cx="50%"
@@ -178,9 +222,10 @@ export function LearnersAgeChart() {
             nameKey="ageGroup"
             label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
             paddingAngle={4}
+            className="!opacity-90"
           >
             {data.chartData.map((entry: any, index: number) => (
-              <Cell key={`cell-${index}`} fill={entry.fill} />
+              <Cell key={`cell-${index}`} fill={entry.fill} className="!opacity-90" />
             ))}
           </Pie>
           <Tooltip

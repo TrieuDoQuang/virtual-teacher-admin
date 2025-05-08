@@ -19,6 +19,53 @@ export function SkillProgressChart() {
   const [lessonData, setLessonData] = useState<any>(null);
   const [learnerData, setLearnerData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [chartColors, setChartColors] = useState(colors);
+
+  useEffect(() => {
+    // Check if dark mode is active and set appropriate chart colors
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    
+    // Set different color values based on the theme
+    if (isDarkMode) {
+      setChartColors([
+        'white', // White color for all bars in dark mode
+        'white',
+        'white',
+        'white',
+        'white',
+        'white',
+        'white'
+      ]);
+    } else {
+      setChartColors(colors);
+    }
+    
+    // Listen for theme changes and update colors accordingly
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          const isDarkMode = document.documentElement.classList.contains('dark');
+          if (isDarkMode) {
+            setChartColors([
+              'white', // White color for all bars in dark mode
+              'white',
+              'white',
+              'white',
+              'white',
+              'white',
+              'white'
+            ]);
+          } else {
+            setChartColors(colors);
+          }
+        }
+      });
+    });
+    
+    observer.observe(document.documentElement, { attributes: true });
+    
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,6 +99,23 @@ export function SkillProgressChart() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    // Add CSS for dark mode chart
+    const style = document.createElement('style');
+    style.innerHTML = `
+      .dark .recharts-bar-rectangle path,
+      .dark .recharts-bar-rectangle rect {
+        fill: white !important;
+        stroke: white !important;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   if (loading) {
     return (
       <Card>
@@ -69,7 +133,7 @@ export function SkillProgressChart() {
   const CustomBarTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-md shadow-lg">
+        <div className="bg-background p-3 border border-border rounded-md shadow-lg">
           <p className="font-medium text-sm">Level: {label}</p>
           <p className="text-sm">Lessons: {payload[0].value}</p>
         </div>
@@ -82,7 +146,7 @@ export function SkillProgressChart() {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-md shadow-lg">
+        <div className="bg-background p-3 border border-border rounded-md shadow-lg">
           <p className="font-medium text-sm">Age Group: {data.ageGroup}</p>
           <p className="text-sm font-bold">Learners: {data.count}</p>
         </div>
@@ -94,7 +158,7 @@ export function SkillProgressChart() {
   const CustomLineTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-md shadow-lg">
+        <div className="bg-background p-3 border border-border rounded-md shadow-lg">
           <p className="font-medium text-sm">Age Group: {label}</p>
           <p className="text-sm">Learners: {payload[0].value}</p>
         </div>
@@ -106,7 +170,7 @@ export function SkillProgressChart() {
   const CustomPieTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-md shadow-lg">
+        <div className="bg-background p-3 border border-border rounded-md shadow-lg">
           <p className="font-medium text-sm">Age Group: {payload[0].name}</p>
           <p className="text-sm">Learners: {payload[0].value}</p>
           <p className="text-sm text-muted-foreground">
@@ -186,8 +250,9 @@ export function SkillProgressChart() {
                   <BarChart
                     data={lessonData}
                     margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
+                    className="text-foreground recharts-bar-chart"
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} stroke="currentColor" />
                     <XAxis 
                       dataKey="level" 
                       stroke="currentColor"
@@ -213,12 +278,14 @@ export function SkillProgressChart() {
                       dataKey="count" 
                       radius={[4, 4, 0, 0]}
                       animationDuration={750}
+                      fill="white"
+                      stroke="white"
                     >
                       {lessonData.map((entry: any, index: number) => (
                         <Cell 
                           key={`cell-${index}`} 
-                          fill={colors[index % colors.length]} 
-                          fillOpacity={0.9}
+                          fill="white"
+                          fillOpacity={1}
                         />
                       ))}
                     </Bar>

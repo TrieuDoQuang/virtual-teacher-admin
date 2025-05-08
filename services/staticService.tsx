@@ -35,4 +35,10 @@ export async function countMessagesByDay(day: number) {
     return response.data;
 }
 
+export async function popularLessonsTopics(limit: number) {
+    const response: Response<any> = await apiPrivate.get(`/statistics/popularLessonTopics?limit=${limit}`);
+    return response.data;
+}
+
+
 

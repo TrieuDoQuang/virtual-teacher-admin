@@ -4,6 +4,7 @@ import { VisitorsPieChart } from "@/components/dashboard/pie-chart";
 import { SkillProgressChart } from "@/components/dashboard/skill-progress-chart";
 import { LearnersAgeChart } from "@/components/dashboard/learners-age-chart";
 import { MessagesActivityChart } from "@/components/dashboard/messages-activity-chart";
+import { PopularTopicsChart } from "@/components/dashboard/popular-topics-chart";
 
 export default function Dashboard() {
   return (
@@ -15,6 +16,7 @@ export default function Dashboard() {
         <SkillProgressChart />
         <LearnersAgeChart />
         <MessagesActivityChart />
+        <PopularTopicsChart />
       </div>
     </div>
   );

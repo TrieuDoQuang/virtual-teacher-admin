@@ -74,7 +74,7 @@ export function MessagesActivityChart() {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-4 border border-gray-200 rounded-md shadow-lg">
+        <div className="bg-background p-3 border border-border rounded-md shadow-lg">
           <p className="font-bold text-base mb-2">{label}</p>
           <div className="space-y-2">
             <p className="text-sm flex items-center">

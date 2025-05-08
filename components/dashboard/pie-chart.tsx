@@ -87,7 +87,7 @@ export function VisitorsPieChart() {
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-md shadow-lg">
+        <div className="bg-background p-3 border border-border rounded-md shadow-lg">
           <p className="font-medium text-sm">Level: {payload[0].name}</p>
           <p className="text-sm">Learners: {payload[0].value}</p>
           <p className="text-sm text-muted-foreground">
@@ -118,7 +118,7 @@ export function VisitorsPieChart() {
         <CardDescription>Distribution across levels and age groups</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {/* Learners by Level Chart - Pie Chart */}
           <div>
             <h3 className="text-sm font-medium mb-2 text-center">Learners by Level</h3>
@@ -199,73 +199,6 @@ export function VisitorsPieChart() {
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Learners by Age Group Chart - Bar Chart */}
-          <div>
-            <h3 className="text-sm font-medium mb-2 text-center">Learners by Age Group</h3>
-            {learnerData && learnerData.length > 0 ? (
-              <div className="relative" style={{ height: "300px" }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={learnerData}
-                    margin={{ top: 30, right: 30, left: 20, bottom: 40 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis 
-                      dataKey="ageGroup" 
-                      stroke="currentColor"
-                      tick={{ 
-                        fill: "currentColor", 
-                        fontSize: 12, 
-                        fontWeight: "500",
-                        width: 80,
-                        textAnchor: "middle",
-                        fontStyle: "normal"
-                      }}
-                      axisLine={{ stroke: "currentColor" }}
-                      tickLine={{ stroke: "currentColor" }}
-                      height={70}
-                      tickMargin={8}
-                      interval={0}
-                    />
-                    <YAxis 
-                      stroke="currentColor"
-                      tick={{ fill: "currentColor", fontSize: 13 }}
-                      axisLine={{ stroke: "currentColor" }}
-                      tickLine={{ stroke: "currentColor" }}
-                      domain={[0, (dataMax: number) => Math.max(dataMax + 1, 3)]}
-                      allowDecimals={false}
-                    />
-                    <Tooltip content={<CustomAgeGroupTooltip />} />
-                    <Bar 
-                      dataKey="count" 
-                      name="Learners"
-                      radius={[4, 4, 0, 0]}
-                      barSize={60}
-                    >
-                      {learnerData.map((entry: { ageGroup: string; count: number }, index: number) => (
-                        <Cell 
-                          key={`cell-${index}`}
-                          fill={colors[index % colors.length]}
-                          fillOpacity={0.85}
-                        />
-                      ))}
-                      <LabelList 
-                        dataKey="count" 
-                        position="top" 
-                        style={{ fill: 'currentColor', fontSize: 14, fontWeight: 'bold' }}
-                        formatter={(value: number) => `${value}`}
-                      />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center h-[300px]">
-                No data available
-              </div>
-            )}
           </div>
         </div>
       </CardContent>

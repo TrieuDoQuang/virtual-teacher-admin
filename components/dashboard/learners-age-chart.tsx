@@ -84,13 +84,13 @@ export function LearnersAgeChart() {
     
     // Set different color values based on the theme
     if (isDarkMode) {
-      document.documentElement.style.setProperty('--chart-color-1', 'hsl(217, 91%, 60%)'); // Bright blue
-      document.documentElement.style.setProperty('--chart-color-2', 'hsl(142, 76%, 50%)');  // Bright green
-      document.documentElement.style.setProperty('--chart-color-3', 'hsl(346, 84%, 61%)');  // Bright pink
+      document.documentElement.style.setProperty('--chart-color-1', '#ffffff'); // White for dark mode
+      document.documentElement.style.setProperty('--chart-color-2', '#ffffff');  // Slightly transparent white
+      document.documentElement.style.setProperty('--chart-color-3', '#ffffff');  // More transparent white
     } else {
-      document.documentElement.style.setProperty('--chart-color-1', 'hsl(var(--primary))');
-      document.documentElement.style.setProperty('--chart-color-2', 'hsl(var(--secondary))');
-      document.documentElement.style.setProperty('--chart-color-3', 'hsl(var(--accent))');
+      document.documentElement.style.setProperty('--chart-color-1', '#000000'); // Black for light mode
+      document.documentElement.style.setProperty('--chart-color-2', '#000000');  // Slightly transparent black
+      document.documentElement.style.setProperty('--chart-color-3', '#000000');  // More transparent black
     }
     
     // Listen for theme changes and update colors accordingly
@@ -99,13 +99,13 @@ export function LearnersAgeChart() {
         if (mutation.attributeName === 'class') {
           const isDarkMode = document.documentElement.classList.contains('dark');
           if (isDarkMode) {
-            document.documentElement.style.setProperty('--chart-color-1', 'hsl(217, 91%, 60%)');
-            document.documentElement.style.setProperty('--chart-color-2', 'hsl(142, 76%, 50%)');
-            document.documentElement.style.setProperty('--chart-color-3', 'hsl(346, 84%, 61%)');
+            document.documentElement.style.setProperty('--chart-color-1', '#ffffff'); // White for dark mode
+            document.documentElement.style.setProperty('--chart-color-2', 'rgba(255, 255, 255, 0.8)');  // Slightly transparent white
+            document.documentElement.style.setProperty('--chart-color-3', 'rgba(255, 255, 255, 0.6)');  // More transparent white
           } else {
-            document.documentElement.style.setProperty('--chart-color-1', 'hsl(var(--primary))');
-            document.documentElement.style.setProperty('--chart-color-2', 'hsl(var(--secondary))');
-            document.documentElement.style.setProperty('--chart-color-3', 'hsl(var(--accent))');
+            document.documentElement.style.setProperty('--chart-color-1', '#000000'); // Black for light mode
+            document.documentElement.style.setProperty('--chart-color-2', 'rgba(0, 0, 0, 0.8)');  // Slightly transparent black
+            document.documentElement.style.setProperty('--chart-color-3', 'rgba(0, 0, 0, 0.6)');  // More transparent black
           }
         }
       });

@@ -5,58 +5,35 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useEffect, useState } from "react";
 import { lessonsByLevel, learnersByAgeGroup } from "@/services/staticService";
 
-const colors = [
-  "hsl(var(--primary))",
-  "hsl(var(--secondary))",
-  "hsl(var(--accent))",
-  "hsl(var(--destructive))",
-  "hsl(var(--muted))",
-  "hsl(var(--popover))",
-  "hsl(var(--card))",
-];
-
 export function SkillProgressChart() {
   const [lessonData, setLessonData] = useState<any>(null);
   const [learnerData, setLearnerData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [chartColors, setChartColors] = useState(colors);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
+  // Define colors using CSS variables that will change with theme
   useEffect(() => {
-    // Check if dark mode is active and set appropriate chart colors
-    const isDarkMode = document.documentElement.classList.contains('dark');
+    // Check if dark mode is active
+    const darkModeActive = document.documentElement.classList.contains('dark');
+    setIsDarkMode(darkModeActive);
     
     // Set different color values based on the theme
-    if (isDarkMode) {
-      setChartColors([
-        'white', // White color for all bars in dark mode
-        'white',
-        'white',
-        'white',
-        'white',
-        'white',
-        'white'
-      ]);
+    if (darkModeActive) {
+      document.documentElement.style.setProperty('--skill-chart-color', 'white');
     } else {
-      setChartColors(colors);
+      document.documentElement.style.setProperty('--skill-chart-color', 'black');
     }
     
     // Listen for theme changes and update colors accordingly
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.attributeName === 'class') {
-          const isDarkMode = document.documentElement.classList.contains('dark');
-          if (isDarkMode) {
-            setChartColors([
-              'white', // White color for all bars in dark mode
-              'white',
-              'white',
-              'white',
-              'white',
-              'white',
-              'white'
-            ]);
+          const darkModeActive = document.documentElement.classList.contains('dark');
+          setIsDarkMode(darkModeActive);
+          if (darkModeActive) {
+            document.documentElement.style.setProperty('--skill-chart-color', 'white');
           } else {
-            setChartColors(colors);
+            document.documentElement.style.setProperty('--skill-chart-color', 'black');
           }
         }
       });
@@ -79,6 +56,7 @@ export function SkillProgressChart() {
           const chartData = levelOrder.map(level => ({
             level,
             count: (lessonResponse.data[level] as number) || 0,
+            fill: "var(--skill-chart-color)",
           }));
           
           setLessonData(chartData);
@@ -97,23 +75,6 @@ export function SkillProgressChart() {
     };
 
     fetchData();
-  }, []);
-
-  useEffect(() => {
-    // Add CSS for dark mode chart
-    const style = document.createElement('style');
-    style.innerHTML = `
-      .dark .recharts-bar-rectangle path,
-      .dark .recharts-bar-rectangle rect {
-        fill: white !important;
-        stroke: white !important;
-      }
-    `;
-    document.head.appendChild(style);
-    
-    return () => {
-      document.head.removeChild(style);
-    };
   }, []);
 
   if (loading) {
@@ -142,45 +103,7 @@ export function SkillProgressChart() {
     return null;
   };
 
-  const CustomAgeGroupTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-background p-3 border border-border rounded-md shadow-lg">
-          <p className="font-medium text-sm">Age Group: {data.ageGroup}</p>
-          <p className="text-sm font-bold">Learners: {data.count}</p>
-        </div>
-      );
-    }
-    return null;
-  };
 
-  const CustomLineTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-background p-3 border border-border rounded-md shadow-lg">
-          <p className="font-medium text-sm">Age Group: {label}</p>
-          <p className="text-sm">Learners: {payload[0].value}</p>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  const CustomPieTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-background p-3 border border-border rounded-md shadow-lg">
-          <p className="font-medium text-sm">Age Group: {payload[0].name}</p>
-          <p className="text-sm">Learners: {payload[0].value}</p>
-          <p className="text-sm text-muted-foreground">
-            {(payload[0].percent * 100).toFixed(0)}% of total
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   const renderActiveShape = (props: any) => {
     const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
@@ -238,8 +161,6 @@ export function SkillProgressChart() {
         <CardDescription>Distribution of lessons and learners</CardDescription>
       </CardHeader>
       <CardContent>
-        {/* Age Group Titles Section */}
-
         <div className="w-full">
           {/* Lessons by Level Chart */}
           <div>
@@ -278,14 +199,13 @@ export function SkillProgressChart() {
                       dataKey="count" 
                       radius={[4, 4, 0, 0]}
                       animationDuration={750}
-                      fill="white"
-                      stroke="white"
+                      fill="var(--skill-chart-color)"
                     >
                       {lessonData.map((entry: any, index: number) => (
                         <Cell 
                           key={`cell-${index}`} 
-                          fill="white"
-                          fillOpacity={1}
+                          fill="var(--skill-chart-color)"
+                          stroke="var(--skill-chart-color)"
                         />
                       ))}
                     </Bar>
@@ -298,9 +218,6 @@ export function SkillProgressChart() {
               </div>
             )}
           </div>
-
-          {/* Learners by Age Group Chart - Simple BarChart */}
-          
         </div>
       </CardContent>
     </Card>

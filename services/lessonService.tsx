@@ -6,7 +6,10 @@ import { apiPrivate } from "@/api/axios";
 
 export async function getAllLessons() {
   const response: PaginationResponseResult<Lesson[]> = await apiPrivate.post(
-    "/lesson/getAllLessons"
+    "/lesson/getAllLessons",
+    {
+      limit: 10000,
+    } 
   );
   return response?.data?.data?.results;
 }
